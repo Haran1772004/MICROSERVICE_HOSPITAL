@@ -1,0 +1,28 @@
+server:
+  port: ${SERVER_PORT:8082}
+
+spring:
+  application:
+    name: hospital-service
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/hospital_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration-ms: ${JWT_EXPIRATION_MS:3600000}
+
+internal:
+  api-secret: ${INTERNAL_API_SECRET}
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+services:
+  auth-url: ${AUTH_SERVICE_URL:http://localhost:8081}

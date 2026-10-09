@@ -1,0 +1,24 @@
+server:
+  port: ${SERVER_PORT:8083}
+
+spring:
+  application:
+    name: appointment-service
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/appointment_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration-ms: ${JWT_EXPIRATION_MS:3600000}
+
+internal:
+  api-secret: ${INTERNAL_API_SECRET}
+
+services:
+  hospital-url: ${HOSPITAL_SERVICE_URL:http://localhost:8082}

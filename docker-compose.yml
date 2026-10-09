@@ -1,0 +1,59 @@
+services:
+  auth-db:
+    image: postgres:16
+    container_name: auth-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in the .env file}
+      POSTGRES_DB: auth_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - auth-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d auth_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  hospital-db:
+    image: postgres:16
+    container_name: hospital-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in the .env file}
+      POSTGRES_DB: hospital_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - hospital-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d hospital_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  appointment-db:
+    image: postgres:16
+    container_name: appointment-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in the .env file}
+      POSTGRES_DB: appointment_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - appointment-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d appointment_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  auth-data:
+  hospital-data:
+  appointment-data:
