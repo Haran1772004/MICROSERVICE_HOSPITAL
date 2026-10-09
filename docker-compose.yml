@@ -53,6 +53,72 @@ services:
       timeout: 3s
       retries: 10
 
+  auth-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_MODULE: auth-service
+    image: hospital/auth-service:local
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      SERVER_PORT: "8081"
+      DB_URL: jdbc:postgresql://auth-db:5432/auth_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in the .env file}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in the .env file}
+      INTERNAL_API_SECRET: ${INTERNAL_API_SECRET:?Set INTERNAL_API_SECRET in the .env file}
+      HOSPITAL_SERVICE_URL: http://hospital-service:8082
+    depends_on:
+      auth-db:
+        condition: service_healthy
+
+  hospital-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_MODULE: hospital-service
+    image: hospital/hospital-service:local
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    environment:
+      SERVER_PORT: "8082"
+      DB_URL: jdbc:postgresql://hospital-db:5432/hospital_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in the .env file}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in the .env file}
+      INTERNAL_API_SECRET: ${INTERNAL_API_SECRET:?Set INTERNAL_API_SECRET in the .env file}
+      AUTH_SERVICE_URL: http://auth-service:8081
+    depends_on:
+      hospital-db:
+        condition: service_healthy
+
+  appointment-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_MODULE: appointment-service
+    image: hospital/appointment-service:local
+    restart: unless-stopped
+    ports:
+      - "8083:8083"
+    environment:
+      SERVER_PORT: "8083"
+      DB_URL: jdbc:postgresql://appointment-db:5432/appointment_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in the .env file}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in the .env file}
+      INTERNAL_API_SECRET: ${INTERNAL_API_SECRET:?Set INTERNAL_API_SECRET in the .env file}
+      HOSPITAL_SERVICE_URL: http://hospital-service:8082
+    depends_on:
+      appointment-db:
+        condition: service_healthy
+
 volumes:
   auth-data:
   hospital-data:

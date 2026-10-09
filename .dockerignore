@@ -1,0 +1,11 @@
+.git
+**/.git
+.env
+.env.*
+**/.env
+**/.env.*
+**/target
+**/.idea
+**/.vscode
+*.iml
+project.zip
