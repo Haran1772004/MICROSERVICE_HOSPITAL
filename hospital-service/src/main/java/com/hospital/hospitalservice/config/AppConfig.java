@@ -1,9 +1,10 @@
 package com.hospital.hospitalservice.config;
 
-import com.hospital.common.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import com.hospital.common.security.JwtUtil;
 
 /**
  * General beans of the hospital-service.

@@ -1,8 +1,7 @@
 package com.hospital.hospitalservice.controller;
 
-import com.hospital.hospitalservice.dto.DepartmentRequest;
-import com.hospital.hospitalservice.dto.DepartmentResponse;
-import com.hospital.hospitalservice.service.DepartmentService;
+import java.util.List;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.hospital.hospitalservice.dto.DepartmentRequest;
+import com.hospital.hospitalservice.dto.DepartmentResponse;
+import com.hospital.hospitalservice.service.DepartmentService;
 
 /**
  * Endpoints for departments. Everyone who is logged in can read. Only an admin can change.

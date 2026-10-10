@@ -1,7 +1,7 @@
 package com.hospital.auth.dto;
 
-import com.hospital.common.enums.AccountStatus;
 import jakarta.validation.constraints.NotNull;
+import com.hospital.common.enums.AccountStatus;
 
 /**
  * Body of {@code PATCH /internal/users/{userId}/status}.
@@ -9,5 +9,4 @@ import jakarta.validation.constraints.NotNull;
  * @param status the new account status
  */
 public record StatusUpdateRequest(
-        @NotNull(message = "Account status is required.") AccountStatus status) {
-}
+        @NotNull(message = "Account status is required.") AccountStatus status) { }

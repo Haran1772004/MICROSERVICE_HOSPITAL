@@ -1,9 +1,9 @@
 package com.hospital.hospitalservice.dto;
 
+import java.io.Serializable;
+
 import com.hospital.common.enums.AccountStatus;
 import com.hospital.hospitalservice.entity.Department;
-
-import java.io.Serializable;
 
 /**
  * A department as sent to the caller and stored in the local cache.

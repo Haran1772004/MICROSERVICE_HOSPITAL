@@ -1,12 +1,12 @@
 package com.hospital.hospitalservice.exception;
 
-import com.hospital.common.dto.ErrorResponse;
-import com.hospital.common.exception.ApiException;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -19,7 +19,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import java.util.stream.Collectors;
+import com.hospital.common.dto.ErrorResponse;
+import com.hospital.common.exception.ApiException;
 
 /**
  * Turns every exception into an {@link ErrorResponse} with the right HTTP status.
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     /**
      * Handles business errors; the status comes from the exception.
@@ -106,7 +107,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrity(
             DataIntegrityViolationException exception) {
-        log.warn("Data integrity violation: {}", exception.getClass().getSimpleName());
+        LOG.warn("Data integrity violation: {}", exception.getClass().getSimpleName());
         return build(HttpStatus.CONFLICT.value(),
                 "The data conflicts with existing data.");
     }
@@ -178,7 +179,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception exception) {
-        log.error("Unexpected error", exception);
+        LOG.error("Unexpected error", exception);
         return build(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "An unexpected error occurred.");
     }

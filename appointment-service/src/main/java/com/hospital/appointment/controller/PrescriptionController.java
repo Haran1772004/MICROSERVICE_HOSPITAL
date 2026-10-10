@@ -1,9 +1,9 @@
 package com.hospital.appointment.controller;
 
-import com.hospital.appointment.dto.PrescriptionRequest;
-import com.hospital.appointment.dto.PrescriptionResponse;
-import com.hospital.appointment.service.PrescriptionService;
+import java.util.List;
+
 import jakarta.validation.Valid;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.hospital.appointment.dto.PrescriptionRequest;
+import com.hospital.appointment.dto.PrescriptionResponse;
+import com.hospital.appointment.service.PrescriptionService;
 
 /**
  * Prescription endpoints.
@@ -40,7 +42,8 @@ public class PrescriptionController {
      */
     @PostMapping
     @PreAuthorize("hasAnyRole('DOCTOR', 'RECEPTIONIST')")
-    public PrescriptionResponse createPrescription(@Valid @RequestBody PrescriptionRequest request) {
+    public PrescriptionResponse createPrescription(
+            @Valid @RequestBody PrescriptionRequest request) {
         return prescriptionService.createPrescription(request);
     }
 

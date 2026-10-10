@@ -1,5 +1,13 @@
 package com.hospital.hospitalservice.service;
 
+import java.util.List;
+
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.hospital.common.enums.AccountStatus;
 import com.hospital.common.exception.BadRequestException;
 import com.hospital.common.exception.ConflictException;
@@ -8,13 +16,6 @@ import com.hospital.hospitalservice.dto.DepartmentRequest;
 import com.hospital.hospitalservice.dto.DepartmentResponse;
 import com.hospital.hospitalservice.entity.Department;
 import com.hospital.hospitalservice.repository.DepartmentRepository;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * Business logic for departments. Reads are cached in the cache {@code departments}. Every
@@ -23,6 +24,9 @@ import java.util.List;
  */
 @Service
 public class DepartmentService {
+
+    private static final int MAX_NAME_LENGTH = 100;
+    private static final int MAX_DESCRIPTION_LENGTH = 255;
 
     private final DepartmentRepository departmentRepository;
 
@@ -151,10 +155,10 @@ public class DepartmentService {
 
     private void checkFields(String name, String description) {
         Validation.required(name, "Department name is required");
-        if (name.length() > 100) {
+        if (name.length() > MAX_NAME_LENGTH) {
             throw new BadRequestException("Department name must be at most 100 characters");
         }
-        if (description != null && description.length() > 255) {
+        if (description != null && description.length() > MAX_DESCRIPTION_LENGTH) {
             throw new BadRequestException("Description must be at most 255 characters");
         }
     }

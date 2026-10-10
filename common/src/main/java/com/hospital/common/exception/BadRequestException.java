@@ -5,6 +5,7 @@ package com.hospital.common.exception;
  */
 public class BadRequestException extends ApiException {
 
+    private static final int HTTP_STATUS_BAD_REQUEST = 400;
     private static final long serialVersionUID = 1L;
 
     /**
@@ -13,6 +14,6 @@ public class BadRequestException extends ApiException {
      * @param message message shown to the caller
      */
     public BadRequestException(String message) {
-        super(400, message);
+        super(HTTP_STATUS_BAD_REQUEST, message);
     }
 }

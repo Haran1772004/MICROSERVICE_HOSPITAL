@@ -1,5 +1,9 @@
 package com.hospital.hospitalservice.service;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.hospital.common.enums.AccountStatus;
 import com.hospital.common.enums.AddressType;
 import com.hospital.common.exception.BadRequestException;
@@ -17,9 +21,6 @@ import com.hospital.hospitalservice.repository.DepartmentRepository;
 import com.hospital.hospitalservice.repository.DoctorRepository;
 import com.hospital.hospitalservice.repository.PatientAddressRepository;
 import com.hospital.hospitalservice.repository.PatientRepository;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Work for the {@code /internal} endpoints, which other services call: create a profile after

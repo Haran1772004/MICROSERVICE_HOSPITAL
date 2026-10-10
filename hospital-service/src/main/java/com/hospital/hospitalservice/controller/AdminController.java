@@ -1,8 +1,7 @@
 package com.hospital.hospitalservice.controller;
 
-import com.hospital.hospitalservice.dto.DoctorResponse;
-import com.hospital.hospitalservice.dto.MessageResponse;
-import com.hospital.hospitalservice.service.AdminService;
+import java.util.List;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,7 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.hospital.hospitalservice.dto.DoctorResponse;
+import com.hospital.hospitalservice.dto.MessageResponse;
+import com.hospital.hospitalservice.service.AdminService;
 
 /**
  * Admin endpoints to approve or reject doctors who registered.

@@ -1,5 +1,10 @@
 package com.hospital.appointment.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.hospital.appointment.dto.MedicalRecordRequest;
 import com.hospital.appointment.dto.MedicalRecordResponse;
 import com.hospital.appointment.entity.Appointment;
@@ -9,10 +14,6 @@ import com.hospital.appointment.repository.MedicalRecordRepository;
 import com.hospital.common.enums.AppointmentStatus;
 import com.hospital.common.exception.ConflictException;
 import com.hospital.common.exception.ResourceNotFoundException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * Business logic for medical records.
@@ -44,7 +45,8 @@ public class MedicalRecordService {
     @Transactional
     public MedicalRecordResponse createMedicalRecord(MedicalRecordRequest request) {
         Appointment appointment = appointmentRepository.findByAppointmentId(request.appointmentId())
-                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found."));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Appointment not found."));
         if (appointment.getStatus() != AppointmentStatus.SCHEDULED) {
             throw new ConflictException("Only scheduled appointments can have a medical record.");
         }
@@ -62,7 +64,8 @@ public class MedicalRecordService {
         appointment.setStatus(AppointmentStatus.FINISHED);
         appointmentRepository.save(appointment);
 
-        return MedicalRecordResponse.from(saved, appointment.getPatientId(), appointment.getDoctorId());
+        return MedicalRecordResponse.from(
+                saved, appointment.getPatientId(), appointment.getDoctorId());
     }
 
     /**
@@ -73,9 +76,13 @@ public class MedicalRecordService {
     public List<MedicalRecordResponse> getAllMedicalRecords() {
         return medicalRecordRepository.findAllByOrderByRecordDateDescRecordIdDesc().stream()
                 .map(record -> {
-                    Appointment appointment = appointmentRepository.findByAppointmentId(record.getAppointmentId())
-                            .orElseThrow(() -> new ResourceNotFoundException("Appointment not found."));
-                    return MedicalRecordResponse.from(record, appointment.getPatientId(), appointment.getDoctorId());
+                    Appointment appointment = appointmentRepository
+                            .findByAppointmentId(record.getAppointmentId())
+                            .orElseThrow(() ->
+                                    new ResourceNotFoundException("Appointment not found."));
+                    return MedicalRecordResponse.from(
+                            record, appointment.getPatientId(),
+                            appointment.getDoctorId());
                 })
                 .toList();
     }
@@ -89,9 +96,11 @@ public class MedicalRecordService {
     public MedicalRecordResponse getMedicalRecord(int recordId) {
         MedicalRecord record = medicalRecordRepository.findByRecordId(recordId)
                 .orElseThrow(() -> new ResourceNotFoundException("Medical record not found."));
-        Appointment appointment = appointmentRepository.findByAppointmentId(record.getAppointmentId())
+        Appointment appointment = appointmentRepository
+                .findByAppointmentId(record.getAppointmentId())
                 .orElseThrow(() -> new ResourceNotFoundException("Appointment not found."));
-        return MedicalRecordResponse.from(record, appointment.getPatientId(), appointment.getDoctorId());
+        return MedicalRecordResponse.from(
+                record, appointment.getPatientId(), appointment.getDoctorId());
     }
 
     /**
@@ -104,8 +113,10 @@ public class MedicalRecordService {
         MedicalRecord record = medicalRecordRepository.findByAppointmentId(appointmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Medical record not found."));
         Appointment appointment = appointmentRepository.findByAppointmentId(appointmentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found."));
-        return MedicalRecordResponse.from(record, appointment.getPatientId(), appointment.getDoctorId());
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Appointment not found."));
+        return MedicalRecordResponse.from(
+                record, appointment.getPatientId(), appointment.getDoctorId());
     }
 
     /**
@@ -115,15 +126,20 @@ public class MedicalRecordService {
      * @return matching records
      */
     public List<MedicalRecordResponse> getMedicalRecordsByPatient(int patientId) {
-        List<Integer> appointmentIds = appointmentRepository.findByPatientIdOrderByAppointmentDateAscAppointmentTimeAsc(
-                        patientId).stream()
+        List<Integer> appointmentIds = appointmentRepository
+                .findByPatientIdOrderByAppointmentDateAscAppointmentTimeAsc(patientId)
+                .stream()
                 .map(Appointment::getAppointmentId)
                 .toList();
         return medicalRecordRepository.findByAppointmentIdIn(appointmentIds).stream()
                 .map(record -> {
-                    Appointment appointment = appointmentRepository.findByAppointmentId(record.getAppointmentId())
-                            .orElseThrow(() -> new ResourceNotFoundException("Appointment not found."));
-                    return MedicalRecordResponse.from(record, appointment.getPatientId(), appointment.getDoctorId());
+                    Appointment appointment = appointmentRepository
+                            .findByAppointmentId(record.getAppointmentId())
+                            .orElseThrow(() ->
+                                    new ResourceNotFoundException("Appointment not found."));
+                    return MedicalRecordResponse.from(
+                            record, appointment.getPatientId(),
+                            appointment.getDoctorId());
                 })
                 .toList();
     }
@@ -135,15 +151,20 @@ public class MedicalRecordService {
      * @return matching records
      */
     public List<MedicalRecordResponse> getMedicalRecordsByDoctor(int doctorId) {
-        List<Integer> appointmentIds = appointmentRepository.findByDoctorIdOrderByAppointmentDateAscAppointmentTimeAsc(
-                        doctorId).stream()
+        List<Integer> appointmentIds = appointmentRepository
+                .findByDoctorIdOrderByAppointmentDateAscAppointmentTimeAsc(doctorId)
+                .stream()
                 .map(Appointment::getAppointmentId)
                 .toList();
         return medicalRecordRepository.findByAppointmentIdIn(appointmentIds).stream()
                 .map(record -> {
-                    Appointment appointment = appointmentRepository.findByAppointmentId(record.getAppointmentId())
-                            .orElseThrow(() -> new ResourceNotFoundException("Appointment not found."));
-                    return MedicalRecordResponse.from(record, appointment.getPatientId(), appointment.getDoctorId());
+                    Appointment appointment = appointmentRepository
+                            .findByAppointmentId(record.getAppointmentId())
+                            .orElseThrow(() ->
+                                    new ResourceNotFoundException("Appointment not found."));
+                    return MedicalRecordResponse.from(
+                            record, appointment.getPatientId(),
+                            appointment.getDoctorId());
                 })
                 .toList();
     }

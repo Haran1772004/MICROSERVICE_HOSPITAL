@@ -1,15 +1,14 @@
 package com.hospital.auth.dto;
-
 /**
- * Body sent to hospital-service {@code POST /internal/doctors}.
- * The doctor is created there with status PENDING.
+ * Body sent to hospital-service {@code POST /internal/doctors}. The doctor is created there with
+ * status PENDING.
  *
- * @param userId         id of the new user in auth-service
- * @param name           full name
+ * @param userId id of the new user in auth-service
+ * @param name full name
  * @param specialization medical specialization
- * @param phone          phone number
- * @param email          email address
- * @param departmentId   id of the department
+ * @param phone phone number
+ * @param email email address
+ * @param departmentId id of the department
  */
 public record CreateDoctorProfileRequest(
         int userId,
@@ -17,5 +16,4 @@ public record CreateDoctorProfileRequest(
         String specialization,
         String phone,
         String email,
-        int departmentId) {
-}
+        int departmentId) { }

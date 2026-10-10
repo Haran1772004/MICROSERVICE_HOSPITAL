@@ -1,11 +1,9 @@
 package com.hospital.hospitalservice.client;
 
-import com.hospital.common.enums.AccountStatus;
-import com.hospital.common.exception.ApiException;
-import com.hospital.common.exception.ServiceUnavailableException;
-import com.hospital.common.security.InternalApi;
-import com.hospital.hospitalservice.dto.RemoteError;
-import com.hospital.hospitalservice.dto.StatusBody;
+import java.net.http.HttpClient;
+import java.time.Duration;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,9 +14,12 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 
-import java.net.http.HttpClient;
-import java.time.Duration;
-import java.util.Set;
+import com.hospital.common.enums.AccountStatus;
+import com.hospital.common.exception.ApiException;
+import com.hospital.common.exception.ServiceUnavailableException;
+import com.hospital.common.security.InternalApi;
+import com.hospital.hospitalservice.dto.RemoteError;
+import com.hospital.hospitalservice.dto.StatusBody;
 
 /**
  * Calls the internal endpoints of auth-service. Every call sends the
@@ -35,7 +36,7 @@ import java.util.Set;
 @Component
 public class AuthServiceClient {
 
-    private static final Logger log = LoggerFactory.getLogger(AuthServiceClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AuthServiceClient.class);
 
     /** Statuses from auth-service that are business errors the user should see. */
     private static final Set<Integer> PASS_THROUGH_STATUSES = Set.of(400, 404, 409, 422);
@@ -89,7 +90,7 @@ public class AuthServiceClient {
         } catch (RestClientResponseException exception) {
             throw translate(exception);
         } catch (RestClientException exception) {
-            log.error("Auth service call failed: {}", exception.getClass().getSimpleName());
+            LOG.error("Auth service call failed: {}", exception.getClass().getSimpleName());
             throw new ServiceUnavailableException(UNAVAILABLE_MESSAGE);
         }
     }
@@ -99,7 +100,7 @@ public class AuthServiceClient {
         if (PASS_THROUGH_STATUSES.contains(status)) {
             return new ApiException(status, extractMessage(exception));
         }
-        log.error("Auth service answered unexpected status {}", status);
+        LOG.error("Auth service answered unexpected status {}", status);
         return new ServiceUnavailableException(UNAVAILABLE_MESSAGE);
     }
 

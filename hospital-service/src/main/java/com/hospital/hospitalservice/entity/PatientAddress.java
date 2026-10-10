@@ -1,6 +1,5 @@
 package com.hospital.hospitalservice.entity;
 
-import com.hospital.common.enums.AddressType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,6 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import com.hospital.common.enums.AddressType;
+
 /**
  * An address of a patient. A patient can have one address of each type.
  * This entity is never returned from the API; use {@code AddressResponse}.
@@ -17,6 +18,11 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "patient_addresses")
 public class PatientAddress {
+
+    private static final int STATE_COLUMN_LENGTH = 100;
+    private static final int DISTRICT_COLUMN_LENGTH = 100;
+    private static final int PINCODE_COLUMN_LENGTH = 10;
+    private static final int ADDRESS_TYPE_COLUMN_LENGTH = 9;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,17 +32,17 @@ public class PatientAddress {
     @Column(name = "patient_id", nullable = false)
     private int patientId;
 
-    @Column(name = "state", nullable = false, length = 100)
+    @Column(name = "state", nullable = false, length = STATE_COLUMN_LENGTH)
     private String state;
 
-    @Column(name = "district", nullable = false, length = 100)
+    @Column(name = "district", nullable = false, length = DISTRICT_COLUMN_LENGTH)
     private String district;
 
-    @Column(name = "pincode", nullable = false, length = 10)
+    @Column(name = "pincode", nullable = false, length = PINCODE_COLUMN_LENGTH)
     private String pincode;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "address_type", nullable = false, length = 9)
+    @Column(name = "address_type", nullable = false, length = ADDRESS_TYPE_COLUMN_LENGTH)
     private AddressType addressType;
 
     /**

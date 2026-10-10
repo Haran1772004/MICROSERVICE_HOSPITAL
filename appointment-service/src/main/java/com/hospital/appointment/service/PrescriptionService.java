@@ -1,14 +1,15 @@
 package com.hospital.appointment.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.hospital.appointment.dto.PrescriptionRequest;
 import com.hospital.appointment.dto.PrescriptionResponse;
 import com.hospital.appointment.entity.Prescription;
 import com.hospital.appointment.repository.MedicalRecordRepository;
 import com.hospital.appointment.repository.PrescriptionRepository;
 import com.hospital.common.exception.ResourceNotFoundException;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * Business logic for prescriptions.

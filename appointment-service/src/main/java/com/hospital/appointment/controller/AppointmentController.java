@@ -1,12 +1,11 @@
 package com.hospital.appointment.controller;
 
-import com.hospital.appointment.dto.AppointmentRequest;
-import com.hospital.appointment.dto.AppointmentResponse;
-import com.hospital.appointment.security.CurrentUser;
-import com.hospital.appointment.service.AppointmentService;
-import com.hospital.common.security.JwtUser;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -16,10 +15,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+//import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
+import com.hospital.appointment.dto.AppointmentRequest;
+import com.hospital.appointment.dto.AppointmentResponse;
+import com.hospital.appointment.security.CurrentUser;
+import com.hospital.appointment.service.AppointmentService;
+import com.hospital.common.security.JwtUser;
 
 /**
  * Appointment endpoints.
@@ -119,9 +121,9 @@ public class AppointmentController {
      */
     @GetMapping("/doctor/{doctorId}/today")
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'DOCTOR', 'PATIENT')")
-    public List<AppointmentResponse> getByDoctorToday(@PathVariable int doctorId,
-                                                    @RequestParam(value = "date", required = false)
-                                                    LocalDate date) {
+    public List<AppointmentResponse> getByDoctorToday(
+            @PathVariable int doctorId,
+            @RequestParam(value = "date", required = false) LocalDate date) {
         return appointmentService.getAppointmentsByDoctorOnDate(doctorId,
                 date == null ? LocalDate.now() : date);
     }
@@ -138,7 +140,8 @@ public class AppointmentController {
     public List<LocalTime> getAvailableSlots(@PathVariable int doctorId,
                                             @RequestParam(value = "date", required = false)
                                             LocalDate date) {
-        return appointmentService.getAvailableSlots(doctorId, date == null ? LocalDate.now() : date);
+        return appointmentService.getAvailableSlots(
+                doctorId, date == null ? LocalDate.now() : date);
     }
 
     /**

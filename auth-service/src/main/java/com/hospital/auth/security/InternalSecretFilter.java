@@ -1,6 +1,9 @@
 package com.hospital.auth.security;
 
-import com.hospital.common.security.InternalApi;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.List;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,17 +12,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.util.List;
+import com.hospital.common.security.InternalApi;
 
 /**
- * Protects {@code /internal/**} (service-to-service endpoints). The caller must send the
- * header {@code X-Internal-Secret} with the value of {@code INTERNAL_API_SECRET}.
- * A request with a missing or wrong secret gets 401, even if it carries a valid user JWT.
- * A request with the right secret gets the internal role {@code ROLE_INTERNAL}.
+ * Protects {@code /internal/**} (service-to-service endpoints). The caller must send the header
+ * {@code X-Internal-Secret} with the value of {@code INTERNAL_API_SECRET}. A request with a
+ * missing or wrong secret gets 401, even if it carries a valid user JWT. A request with the right
+ * secret gets the internal role {@code ROLE_INTERNAL}.
  */
 public class InternalSecretFilter extends OncePerRequestFilter {
 
@@ -29,10 +28,10 @@ public class InternalSecretFilter extends OncePerRequestFilter {
     private final byte[] expectedSecret;
 
     /**
-     * Creates the filter.
-     *
-     * @param secret the secret that internal callers must send
-     */
+      * Creates the filter.
+      *
+      * @param secret the secret that internal callers must send
+      */
     public InternalSecretFilter(String secret) {
         this.expectedSecret = secret.getBytes(StandardCharsets.UTF_8);
     }
@@ -45,24 +44,31 @@ public class InternalSecretFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain filterChain)
+    protected void doFilterInternal(
+            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         String sent = request.getHeader(InternalApi.SECRET_HEADER);
-        boolean valid = sent != null
-                && expectedSecret.length > 0
-                && MessageDigest.isEqual(expectedSecret, sent.getBytes(StandardCharsets.UTF_8));
+        boolean valid =
+                sent != null
+                        && expectedSecret.length > 0
+                        && MessageDigest.isEqual(
+                                expectedSecret, sent.getBytes(StandardCharsets.UTF_8));
 
         if (!valid) {
-            SecurityErrorWriter.write(response, HttpServletResponse.SC_UNAUTHORIZED,
+            SecurityErrorWriter.write(
+                    response,
+                    HttpServletResponse.SC_UNAUTHORIZED,
                     "Missing or invalid internal secret");
             return;
         }
 
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken("internal-service", null,
-                        List.of(new SimpleGrantedAuthority("ROLE_" + INTERNAL_ROLE))));
+        SecurityContextHolder.getContext()
+                .setAuthentication(
+                        new UsernamePasswordAuthenticationToken(
+                                "internal-service",
+                                null,
+                                List.of(new SimpleGrantedAuthority("ROLE_" + INTERNAL_ROLE))));
 
         filterChain.doFilter(request, response);
     }

@@ -1,11 +1,9 @@
 package com.hospital.appointment.client;
 
-import com.hospital.appointment.dto.DoctorInfo;
-import com.hospital.appointment.dto.PatientInfo;
-import com.hospital.appointment.dto.RemoteError;
-import com.hospital.common.exception.ApiException;
-import com.hospital.common.exception.ServiceUnavailableException;
-import com.hospital.common.security.InternalApi;
+import java.net.http.HttpClient;
+import java.time.Duration;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,9 +13,12 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 
-import java.net.http.HttpClient;
-import java.time.Duration;
-import java.util.Set;
+import com.hospital.appointment.dto.DoctorInfo;
+import com.hospital.appointment.dto.PatientInfo;
+import com.hospital.appointment.dto.RemoteError;
+import com.hospital.common.exception.ApiException;
+import com.hospital.common.exception.ServiceUnavailableException;
+import com.hospital.common.security.InternalApi;
 
 /**
  * Calls the hospital-service internal endpoints.
@@ -25,7 +26,7 @@ import java.util.Set;
 @Component
 public class HospitalServiceClient {
 
-    private static final Logger log = LoggerFactory.getLogger(HospitalServiceClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HospitalServiceClient.class);
 
     private static final Set<Integer> PASS_THROUGH_STATUSES = Set.of(400, 404, 409, 422);
 
@@ -97,7 +98,7 @@ public class HospitalServiceClient {
         } catch (RestClientResponseException exception) {
             throw translate(exception);
         } catch (RestClientException exception) {
-            log.error("Hospital service call failed for {}: {}", path,
+            LOG.error("Hospital service call failed for {}: {}", path,
                     exception.getClass().getSimpleName());
             throw new ServiceUnavailableException(UNAVAILABLE_MESSAGE);
         }
@@ -108,7 +109,7 @@ public class HospitalServiceClient {
         if (PASS_THROUGH_STATUSES.contains(status)) {
             return new ApiException(status, extractMessage(exception));
         }
-        log.error("Hospital service answered unexpected status {}", status);
+        LOG.error("Hospital service answered unexpected status {}", status);
         return new ServiceUnavailableException(UNAVAILABLE_MESSAGE);
     }
 

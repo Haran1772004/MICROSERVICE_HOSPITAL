@@ -1,10 +1,5 @@
 package com.hospital.hospitalservice.controller;
 
-import com.hospital.hospitalservice.dto.CreateDoctorProfileRequest;
-import com.hospital.hospitalservice.dto.CreatePatientProfileRequest;
-import com.hospital.hospitalservice.dto.DoctorInfo;
-import com.hospital.hospitalservice.dto.PatientInfo;
-import com.hospital.hospitalservice.service.InternalProfileService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +9,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.hospital.hospitalservice.dto.CreateDoctorProfileRequest;
+import com.hospital.hospitalservice.dto.CreatePatientProfileRequest;
+import com.hospital.hospitalservice.dto.DoctorInfo;
+import com.hospital.hospitalservice.dto.PatientInfo;
+import com.hospital.hospitalservice.service.InternalProfileService;
 
 /**
  * Endpoints for other services (auth-service and appointment-service). They are not for

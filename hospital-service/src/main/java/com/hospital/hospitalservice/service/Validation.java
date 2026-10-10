@@ -1,15 +1,21 @@
 package com.hospital.hospitalservice.service;
 
-import com.hospital.common.enums.Gender;
-import com.hospital.common.exception.BadRequestException;
-
 import java.time.LocalDate;
 import java.util.regex.Pattern;
+
+import com.hospital.common.enums.Gender;
+import com.hospital.common.exception.BadRequestException;
 
 /**
  * Input checks shared by the services. The messages are the same as in the old project.
  */
 final class Validation {
+
+    private static final int MAX_PATIENT_NAME_LENGTH = 60;
+    private static final int MAX_SPECIALIZATION_LENGTH = 100;
+    private static final int MAX_ADDRESS_FIELD_LENGTH = 100;
+    private static final int MAX_PINCODE_LENGTH = 10;
+    private static final int MAX_EMAIL_LENGTH = 100;
 
     private static final Pattern PHONE = Pattern.compile("^\\+?[0-9]{7,15}$");
     private static final Pattern EMAIL = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
@@ -52,7 +58,7 @@ final class Validation {
      */
     static void patient(String name, LocalDate dob, Gender gender, String phone, String email) {
         required(name, "Patient name is required");
-        if (name.length() < 2 || name.length() > 60) {
+        if (name.length() < 2 || name.length() > MAX_PATIENT_NAME_LENGTH) {
             throw new BadRequestException("Patient name must be 2-60 characters");
         }
         if (dob != null && dob.isAfter(LocalDate.now())) {
@@ -76,11 +82,11 @@ final class Validation {
      */
     static void doctor(String name, String specialization, String phone, String email) {
         required(name, "Doctor name is required");
-        if (name.length() < 2 || name.length() > 60) {
+        if (name.length() < 2 || name.length() > MAX_PATIENT_NAME_LENGTH) {
             throw new BadRequestException("Doctor name must be 2-60 characters");
         }
         required(specialization, "Specialization is required");
-        if (specialization.length() > 100) {
+        if (specialization.length() > MAX_SPECIALIZATION_LENGTH) {
             throw new BadRequestException("Specialization must be at most 100 characters");
         }
         phone(phone);
@@ -99,10 +105,11 @@ final class Validation {
         required(state, "State is required");
         required(district, "District is required");
         required(pincode, "Pincode is required");
-        if (state.length() > 100 || district.length() > 100) {
+        if (state.length() > MAX_ADDRESS_FIELD_LENGTH
+                || district.length() > MAX_ADDRESS_FIELD_LENGTH) {
             throw new BadRequestException("State and district must be at most 100 characters");
         }
-        if (pincode.length() > 10) {
+        if (pincode.length() > MAX_PINCODE_LENGTH) {
             throw new BadRequestException("Pincode must be at most 10 characters");
         }
     }
@@ -116,7 +123,7 @@ final class Validation {
 
     private static void email(String email) {
         required(email, "Email is required");
-        if (email.length() > 100 || !EMAIL.matcher(email).matches()) {
+        if (email.length() > MAX_EMAIL_LENGTH || !EMAIL.matcher(email).matches()) {
             throw new BadRequestException("Invalid email format");
         }
     }

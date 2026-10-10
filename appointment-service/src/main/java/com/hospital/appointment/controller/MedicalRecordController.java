@@ -1,9 +1,9 @@
 package com.hospital.appointment.controller;
 
-import com.hospital.appointment.dto.MedicalRecordRequest;
-import com.hospital.appointment.dto.MedicalRecordResponse;
-import com.hospital.appointment.service.MedicalRecordService;
+import java.util.List;
+
 import jakarta.validation.Valid;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.hospital.appointment.dto.MedicalRecordRequest;
+import com.hospital.appointment.dto.MedicalRecordResponse;
+import com.hospital.appointment.service.MedicalRecordService;
 
 /**
  * Medical record endpoints.
@@ -40,7 +42,8 @@ public class MedicalRecordController {
      */
     @PostMapping
     @PreAuthorize("hasAnyRole('DOCTOR', 'RECEPTIONIST')")
-    public MedicalRecordResponse createMedicalRecord(@Valid @RequestBody MedicalRecordRequest request) {
+    public MedicalRecordResponse createMedicalRecord(
+            @Valid @RequestBody MedicalRecordRequest request) {
         return medicalRecordService.createMedicalRecord(request);
     }
 

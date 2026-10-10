@@ -1,14 +1,7 @@
 package com.hospital.hospitalservice.controller;
 
-import com.hospital.common.enums.AccountStatus;
-import com.hospital.common.enums.Role;
-import com.hospital.common.exception.BadRequestException;
-import com.hospital.common.exception.ForbiddenException;
-import com.hospital.common.security.JwtUser;
-import com.hospital.hospitalservice.dto.PatientRequest;
-import com.hospital.hospitalservice.dto.PatientResponse;
-import com.hospital.hospitalservice.security.CurrentUser;
-import com.hospital.hospitalservice.service.PatientService;
+import java.util.List;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.hospital.common.enums.AccountStatus;
+import com.hospital.common.enums.Role;
+import com.hospital.common.exception.BadRequestException;
+import com.hospital.common.exception.ForbiddenException;
+import com.hospital.common.security.JwtUser;
+import com.hospital.hospitalservice.dto.PatientRequest;
+import com.hospital.hospitalservice.dto.PatientResponse;
+import com.hospital.hospitalservice.security.CurrentUser;
+import com.hospital.hospitalservice.service.PatientService;
 
 /**
  * Endpoints for patients. Staff manage all patients. A patient can only see and change the

@@ -1,20 +1,19 @@
 package com.hospital.hospitalservice.service;
 
+import java.util.List;
+
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.hospital.common.enums.AccountStatus;
-import com.hospital.common.exception.ApiException;
 import com.hospital.common.exception.BadRequestException;
 import com.hospital.common.exception.ResourceNotFoundException;
-import com.hospital.common.exception.ServiceUnavailableException;
 import com.hospital.hospitalservice.client.AuthServiceClient;
 import com.hospital.hospitalservice.dto.DoctorResponse;
 import com.hospital.hospitalservice.dto.MessageResponse;
 import com.hospital.hospitalservice.entity.Doctor;
 import com.hospital.hospitalservice.repository.DoctorRepository;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * Admin work on doctors: list the doctors that wait for approval, approve or reject them.

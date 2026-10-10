@@ -1,5 +1,12 @@
 package com.hospital.appointment.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.hospital.appointment.client.HospitalServiceClient;
 import com.hospital.appointment.dto.AppointmentRequest;
 import com.hospital.appointment.dto.AppointmentResponse;
@@ -14,18 +21,20 @@ import com.hospital.common.exception.BadRequestException;
 import com.hospital.common.exception.ConflictException;
 import com.hospital.common.exception.ResourceNotFoundException;
 import com.hospital.common.security.JwtUser;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
 
 /**
  * Business logic for appointments.
  */
 @Service
 public class AppointmentService {
+
+    private static final List<LocalTime> AVAILABLE_SLOTS = List.of(
+            LocalTime.of(9, 0), LocalTime.of(9, 30), LocalTime.of(10, 0), LocalTime.of(10, 30),
+            LocalTime.of(11, 0), LocalTime.of(11, 30), LocalTime.of(12, 0),
+            LocalTime.of(12, 30), LocalTime.of(13, 0), LocalTime.of(13, 30),
+            LocalTime.of(14, 0), LocalTime.of(14, 30), LocalTime.of(15, 0),
+            LocalTime.of(15, 30), LocalTime.of(16, 0), LocalTime.of(16, 30),
+            LocalTime.of(17, 0), LocalTime.of(17, 30));
 
     private final AppointmentRepository appointmentRepository;
     private final HospitalServiceClient hospitalServiceClient;
@@ -56,7 +65,8 @@ public class AppointmentService {
         }
         if (request.doctorId() == null || request.appointmentDate() == null
                 || request.appointmentTime() == null) {
-            throw new BadRequestException("doctorId, appointmentDate and appointmentTime are required.");
+            throw new BadRequestException(
+                    "doctorId, appointmentDate and appointmentTime are required.");
         }
 
         int patientId = resolvePatientId(request, currentUser);
@@ -100,7 +110,8 @@ public class AppointmentService {
      * @return appointments for that patient
      */
     public List<AppointmentResponse> getAppointmentsByPatient(int patientId) {
-        return appointmentRepository.findByPatientIdOrderByAppointmentDateAscAppointmentTimeAsc(patientId)
+        return appointmentRepository
+                .findByPatientIdOrderByAppointmentDateAscAppointmentTimeAsc(patientId)
                 .stream().map(AppointmentResponse::from).toList();
     }
 
@@ -111,7 +122,8 @@ public class AppointmentService {
      * @return appointments for that doctor
      */
     public List<AppointmentResponse> getAppointmentsByDoctor(int doctorId) {
-        return appointmentRepository.findByDoctorIdOrderByAppointmentDateAscAppointmentTimeAsc(doctorId)
+        return appointmentRepository
+                .findByDoctorIdOrderByAppointmentDateAscAppointmentTimeAsc(doctorId)
                 .stream().map(AppointmentResponse::from).toList();
     }
 
@@ -123,7 +135,8 @@ public class AppointmentService {
      * @return appointments on that date
      */
     public List<AppointmentResponse> getAppointmentsByDoctorOnDate(int doctorId, LocalDate date) {
-        return appointmentRepository.findByDoctorIdAndAppointmentDateOrderByAppointmentTimeAsc(doctorId, date)
+        return appointmentRepository
+                .findByDoctorIdAndAppointmentDateOrderByAppointmentTimeAsc(doctorId, date)
                 .stream().map(AppointmentResponse::from).toList();
     }
 
@@ -147,17 +160,12 @@ public class AppointmentService {
      */
     public List<LocalTime> getAvailableSlots(int doctorId, LocalDate date) {
         ensureDoctorIsActive(doctorId);
-        List<LocalTime> allSlots = List.of(
-                LocalTime.of(9, 0), LocalTime.of(9, 30), LocalTime.of(10, 0), LocalTime.of(10, 30),
-                LocalTime.of(11, 0), LocalTime.of(11, 30), LocalTime.of(12, 0), LocalTime.of(12, 30),
-                LocalTime.of(13, 0), LocalTime.of(13, 30), LocalTime.of(14, 0), LocalTime.of(14, 30),
-                LocalTime.of(15, 0), LocalTime.of(15, 30), LocalTime.of(16, 0), LocalTime.of(16, 30),
-                LocalTime.of(17, 0), LocalTime.of(17, 30));
-        List<LocalTime> booked = appointmentRepository.findByDoctorIdAndAppointmentDateOrderByAppointmentTimeAsc(
-                        doctorId, date).stream()
+        List<LocalTime> booked = appointmentRepository
+                .findByDoctorIdAndAppointmentDateOrderByAppointmentTimeAsc(doctorId, date)
+                .stream()
                 .map(Appointment::getAppointmentTime)
                 .toList();
-        return allSlots.stream().filter(slot -> !booked.contains(slot)).toList();
+        return AVAILABLE_SLOTS.stream().filter(slot -> !booked.contains(slot)).toList();
     }
 
     /**
@@ -207,16 +215,19 @@ public class AppointmentService {
     }
 
     private void ensureTimeSlotIsFree(int patientId, int doctorId, LocalDate date, LocalTime time) {
-        boolean doctorBusy = appointmentRepository.existsByDoctorIdAndAppointmentDateAndAppointmentTimeAndStatus(
-                doctorId, date, time, AppointmentStatus.SCHEDULED);
+        boolean doctorBusy = appointmentRepository
+                .existsByDoctorIdAndAppointmentDateAndAppointmentTimeAndStatus(
+                        doctorId, date, time, AppointmentStatus.SCHEDULED);
         if (doctorBusy) {
             throw new ConflictException("Doctor is already booked for this date and time.");
         }
 
-        boolean patientBusy = appointmentRepository.existsByPatientIdAndAppointmentDateAndAppointmentTimeAndStatus(
-                patientId, date, time, AppointmentStatus.SCHEDULED);
+        boolean patientBusy = appointmentRepository
+                .existsByPatientIdAndAppointmentDateAndAppointmentTimeAndStatus(
+                        patientId, date, time, AppointmentStatus.SCHEDULED);
         if (patientBusy) {
-            throw new ConflictException("Patient already has a scheduled appointment at this date and time.");
+            throw new ConflictException(
+                    "Patient already has a scheduled appointment at this date and time.");
         }
     }
 }

@@ -1,8 +1,7 @@
 package com.hospital.hospitalservice.controller;
 
-import com.hospital.hospitalservice.dto.DoctorRequest;
-import com.hospital.hospitalservice.dto.DoctorResponse;
-import com.hospital.hospitalservice.service.DoctorService;
+import java.util.List;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.hospital.hospitalservice.dto.DoctorRequest;
+import com.hospital.hospitalservice.dto.DoctorResponse;
+import com.hospital.hospitalservice.service.DoctorService;
 
 /**
  * Endpoints for doctors. Everyone who is logged in can read. Only an admin can change.

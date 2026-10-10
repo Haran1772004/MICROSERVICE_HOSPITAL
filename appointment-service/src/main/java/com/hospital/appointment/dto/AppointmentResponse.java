@@ -1,10 +1,10 @@
 package com.hospital.appointment.dto;
 
-import com.hospital.appointment.entity.Appointment;
-import com.hospital.common.enums.AppointmentStatus;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
+
+import com.hospital.appointment.entity.Appointment;
+import com.hospital.common.enums.AppointmentStatus;
 
 /**
  * Data returned for an appointment.

@@ -5,6 +5,7 @@ package com.hospital.common.exception;
  */
 public class ServiceUnavailableException extends ApiException {
 
+    private static final int HTTP_STATUS_SERVICE_UNAVAILABLE = 503;
     private static final long serialVersionUID = 1L;
 
     /**
@@ -13,6 +14,6 @@ public class ServiceUnavailableException extends ApiException {
      * @param message message shown to the caller
      */
     public ServiceUnavailableException(String message) {
-        super(503, message);
+        super(HTTP_STATUS_SERVICE_UNAVAILABLE, message);
     }
 }

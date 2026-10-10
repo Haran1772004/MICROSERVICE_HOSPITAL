@@ -1,11 +1,12 @@
 package com.hospital.hospitalservice.repository;
 
-import com.hospital.common.enums.AccountStatus;
-import com.hospital.hospitalservice.entity.Doctor;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.hospital.common.enums.AccountStatus;
+import com.hospital.hospitalservice.entity.Doctor;
 
 /**
  * Database access for doctors.

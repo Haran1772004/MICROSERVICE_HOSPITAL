@@ -1,8 +1,8 @@
 package com.hospital.appointment.dto;
 
-import com.hospital.appointment.entity.MedicalRecord;
-
 import java.time.LocalDate;
+
+import com.hospital.appointment.entity.MedicalRecord;
 
 /**
  * Response body for a medical record.

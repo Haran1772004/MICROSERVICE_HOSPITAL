@@ -1,11 +1,11 @@
 package com.hospital.hospitalservice.dto;
 
+import java.io.Serializable;
+import java.time.LocalDate;
+
 import com.hospital.common.enums.AccountStatus;
 import com.hospital.common.enums.Gender;
 import com.hospital.hospitalservice.entity.Patient;
-
-import java.io.Serializable;
-import java.time.LocalDate;
 
 /**
  * A patient as sent to the caller.

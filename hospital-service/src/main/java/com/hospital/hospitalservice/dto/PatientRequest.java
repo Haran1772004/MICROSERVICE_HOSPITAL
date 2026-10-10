@@ -1,8 +1,8 @@
 package com.hospital.hospitalservice.dto;
 
-import com.hospital.common.enums.Gender;
-
 import java.time.LocalDate;
+
+import com.hospital.common.enums.Gender;
 
 /**
  * Data to create or update a patient.

@@ -1,11 +1,12 @@
 package com.hospital.hospitalservice.security;
 
-import com.hospital.common.dto.ErrorResponse;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.MediaType;
-
 import java.io.IOException;
 import java.time.Instant;
+
+import jakarta.servlet.http.HttpServletResponse;
+
+import org.springframework.http.MediaType;
+
 
 /**
  * Writes an error body in the same shape as {@link ErrorResponse} from inside

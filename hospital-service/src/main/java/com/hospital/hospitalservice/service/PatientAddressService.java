@@ -1,7 +1,11 @@
 package com.hospital.hospitalservice.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.hospital.common.enums.AddressType;
-import com.hospital.common.exception.BadRequestException;
 import com.hospital.common.exception.ConflictException;
 import com.hospital.common.exception.ForbiddenException;
 import com.hospital.common.exception.ResourceNotFoundException;
@@ -10,10 +14,6 @@ import com.hospital.hospitalservice.dto.AddressResponse;
 import com.hospital.hospitalservice.entity.PatientAddress;
 import com.hospital.hospitalservice.repository.PatientAddressRepository;
 import com.hospital.hospitalservice.repository.PatientRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * Business logic for patient addresses.

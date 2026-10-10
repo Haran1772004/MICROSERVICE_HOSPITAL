@@ -1,7 +1,7 @@
 package com.hospital.hospitalservice.entity;
 
-import com.hospital.common.enums.AccountStatus;
-import com.hospital.common.enums.Gender;
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,7 +11,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-import java.time.LocalDate;
+import com.hospital.common.enums.AccountStatus;
+import com.hospital.common.enums.Gender;
 
 /**
  * A patient profile. {@code userId} is the id of the login account in auth-service. It is a
@@ -22,6 +23,12 @@ import java.time.LocalDate;
 @Table(name = "patients")
 public class Patient {
 
+    private static final int NAME_COLUMN_LENGTH = 60;
+    private static final int GENDER_COLUMN_LENGTH = 6;
+    private static final int PHONE_COLUMN_LENGTH = 20;
+    private static final int EMAIL_COLUMN_LENGTH = 100;
+    private static final int STATUS_COLUMN_LENGTH = 8;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "patient_id")
@@ -30,24 +37,24 @@ public class Patient {
     @Column(name = "user_id", unique = true)
     private Integer userId;
 
-    @Column(name = "name", nullable = false, length = 60)
+    @Column(name = "name", nullable = false, length = NAME_COLUMN_LENGTH)
     private String name;
 
     @Column(name = "dob")
     private LocalDate dob;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "gender", nullable = false, length = 6)
+    @Column(name = "gender", nullable = false, length = GENDER_COLUMN_LENGTH)
     private Gender gender;
 
-    @Column(name = "phone", nullable = false, unique = true, length = 20)
+    @Column(name = "phone", nullable = false, unique = true, length = PHONE_COLUMN_LENGTH)
     private String phone;
 
-    @Column(name = "email", nullable = false, unique = true, length = 100)
+    @Column(name = "email", nullable = false, unique = true, length = EMAIL_COLUMN_LENGTH)
     private String email;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 8)
+    @Column(name = "status", nullable = false, length = STATUS_COLUMN_LENGTH)
     private AccountStatus status;
 
     /**

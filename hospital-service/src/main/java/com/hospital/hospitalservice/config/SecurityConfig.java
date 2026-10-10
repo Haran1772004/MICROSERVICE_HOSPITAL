@@ -1,10 +1,10 @@
 package com.hospital.hospitalservice.config;
 
-import com.hospital.common.security.JwtUtil;
-import com.hospital.hospitalservice.security.InternalSecretFilter;
-import com.hospital.hospitalservice.security.JwtAuthenticationFilter;
-import com.hospital.hospitalservice.security.SecurityErrorWriter;
+import java.util.Arrays;
+import java.util.List;
+
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,8 +18,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
-import java.util.List;
+import com.hospital.common.security.JwtUtil;
+import com.hospital.hospitalservice.security.InternalSecretFilter;
+import com.hospital.hospitalservice.security.JwtAuthenticationFilter;
+import com.hospital.hospitalservice.security.SecurityErrorWriter;
 
 /**
  * Security rules of the hospital-service: stateless JWT, role checks with

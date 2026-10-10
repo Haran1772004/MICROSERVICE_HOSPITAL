@@ -1,7 +1,7 @@
 package com.hospital.appointment.exception;
 
-import com.hospital.common.dto.ErrorResponse;
-import com.hospital.common.exception.ApiException;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import java.util.stream.Collectors;
+import com.hospital.common.dto.ErrorResponse;
+import com.hospital.common.exception.ApiException;
 
 /**
  * Turns exceptions into the shared {@link ErrorResponse} format.
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     /**
      * Handles business errors.
@@ -46,7 +47,8 @@ public class GlobalExceptionHandler {
      * @return the error response
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException exception) {
+    public ResponseEntity<ErrorResponse> handleValidation(
+            MethodArgumentNotValidException exception) {
         String message = exception.getBindingResult().getFieldErrors().stream()
                 .map(error -> error.getDefaultMessage())
                 .distinct()
@@ -62,7 +64,8 @@ public class GlobalExceptionHandler {
      * @return the error response
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleUnreadable(HttpMessageNotReadableException exception) {
+    public ResponseEntity<ErrorResponse> handleUnreadable(
+            HttpMessageNotReadableException exception) {
         return build(HttpStatus.BAD_REQUEST.value(), "Malformed or unreadable request body.");
     }
 
@@ -159,7 +162,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception exception) {
-        log.error("Unexpected error", exception);
+        LOG.error("Unexpected error", exception);
         return build(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An unexpected error occurred.");
     }
 

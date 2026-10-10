@@ -1,11 +1,12 @@
 package com.hospital.hospitalservice.security;
 
-import com.hospital.common.exception.UnauthorizedException;
-import com.hospital.common.security.JwtUser;
+import java.util.Optional;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.Optional;
+import com.hospital.common.exception.UnauthorizedException;
+import com.hospital.common.security.JwtUser;
 
 /**
  * Gives access to the user of the current request.

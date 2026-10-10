@@ -1,9 +1,9 @@
 package com.hospital.hospitalservice.dto;
 
+import java.io.Serializable;
+
 import com.hospital.common.enums.AccountStatus;
 import com.hospital.hospitalservice.entity.Doctor;
-
-import java.io.Serializable;
 
 /**
  * A doctor as sent to the caller and stored in the local cache.

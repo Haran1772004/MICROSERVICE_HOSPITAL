@@ -1,5 +1,12 @@
 package com.hospital.hospitalservice.service;
 
+import java.util.List;
+
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.hospital.common.enums.AccountStatus;
 import com.hospital.common.exception.BadRequestException;
 import com.hospital.common.exception.ConflictException;
@@ -10,12 +17,6 @@ import com.hospital.hospitalservice.entity.Department;
 import com.hospital.hospitalservice.entity.Doctor;
 import com.hospital.hospitalservice.repository.DepartmentRepository;
 import com.hospital.hospitalservice.repository.DoctorRepository;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * Business logic for doctors. Reads are cached in the cache {@code doctors}. Every change

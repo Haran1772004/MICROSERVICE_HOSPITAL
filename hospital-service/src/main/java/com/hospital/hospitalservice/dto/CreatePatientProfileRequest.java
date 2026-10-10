@@ -1,9 +1,9 @@
 package com.hospital.hospitalservice.dto;
 
+import java.time.LocalDate;
+
 import com.hospital.common.enums.AddressType;
 import com.hospital.common.enums.Gender;
-
-import java.time.LocalDate;
 
 /**
  * Sent by auth-service when a patient registers: the patient and the first address.

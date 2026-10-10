@@ -1,6 +1,8 @@
 package com.hospital.appointment.entity;
 
-import com.hospital.common.enums.AppointmentStatus;
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,8 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import com.hospital.common.enums.AppointmentStatus;
 
 /**
  * An appointment booked for a patient and doctor at one date and time.
@@ -65,46 +66,101 @@ public class Appointment {
         this.status = status;
     }
 
+    /**
+     * Returns the appointment ID.
+     *
+     * @return the appointment ID
+     */
     public Integer getAppointmentId() {
         return appointmentId;
     }
 
+    /**
+     * Returns the ID of the patient.
+     *
+     * @return the patient ID
+     */
     public int getPatientId() {
         return patientId;
     }
 
+    /**
+     * Sets the ID of the patient.
+     *
+     * @param patientId the patient ID
+     */
     public void setPatientId(int patientId) {
         this.patientId = patientId;
     }
 
+    /**
+     * Returns the ID of the doctor.
+     *
+     * @return the doctor ID
+     */
     public int getDoctorId() {
         return doctorId;
     }
 
+    /**
+     * Sets the ID of the doctor.
+     *
+     * @param doctorId the doctor ID
+     */
     public void setDoctorId(int doctorId) {
         this.doctorId = doctorId;
     }
 
+    /**
+     * Returns the appointment date.
+     *
+     * @return the appointment date
+     */
     public LocalDate getAppointmentDate() {
         return appointmentDate;
     }
 
+    /**
+     * Sets the appointment date.
+     *
+     * @param appointmentDate the appointment date
+     */
     public void setAppointmentDate(LocalDate appointmentDate) {
         this.appointmentDate = appointmentDate;
     }
 
+    /**
+     * Returns the appointment time.
+     *
+     * @return the appointment time
+     */
     public LocalTime getAppointmentTime() {
         return appointmentTime;
     }
 
+    /**
+     * Sets the appointment time.
+     *
+     * @param appointmentTime the appointment time
+     */
     public void setAppointmentTime(LocalTime appointmentTime) {
         this.appointmentTime = appointmentTime;
     }
 
+    /**
+     * Returns the appointment status.
+     *
+     * @return the appointment status
+     */
     public AppointmentStatus getStatus() {
         return status;
     }
 
+    /**
+     * Sets the appointment status.
+     *
+     * @param status the appointment status
+     */
     public void setStatus(AppointmentStatus status) {
         this.status = status;
     }

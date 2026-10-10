@@ -5,6 +5,7 @@ package com.hospital.common.exception;
  */
 public class ForbiddenException extends ApiException {
 
+    private static final int HTTP_STATUS_FORBIDDEN = 403;
     private static final long serialVersionUID = 1L;
 
     /**
@@ -13,6 +14,6 @@ public class ForbiddenException extends ApiException {
      * @param message message shown to the caller
      */
     public ForbiddenException(String message) {
-        super(403, message);
+        super(HTTP_STATUS_FORBIDDEN, message);
     }
 }

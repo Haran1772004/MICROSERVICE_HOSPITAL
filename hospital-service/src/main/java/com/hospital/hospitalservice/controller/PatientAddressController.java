@@ -1,14 +1,7 @@
 package com.hospital.hospitalservice.controller;
 
-import com.hospital.common.enums.Role;
-import com.hospital.common.exception.BadRequestException;
-import com.hospital.common.exception.ForbiddenException;
-import com.hospital.common.security.JwtUser;
-import com.hospital.hospitalservice.dto.AddressRequest;
-import com.hospital.hospitalservice.dto.AddressResponse;
-import com.hospital.hospitalservice.security.CurrentUser;
-import com.hospital.hospitalservice.service.PatientAddressService;
-import com.hospital.hospitalservice.service.PatientService;
+import java.util.List;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +12,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.hospital.common.enums.Role;
+import com.hospital.common.exception.BadRequestException;
+import com.hospital.common.exception.ForbiddenException;
+import com.hospital.common.security.JwtUser;
+import com.hospital.hospitalservice.dto.AddressRequest;
+import com.hospital.hospitalservice.dto.AddressResponse;
+import com.hospital.hospitalservice.security.CurrentUser;
+import com.hospital.hospitalservice.service.PatientAddressService;
+import com.hospital.hospitalservice.service.PatientService;
 
 /**
  * Endpoints for patient addresses. Staff can manage the addresses of any patient. A patient
@@ -180,7 +181,11 @@ public class PatientAddressController {
         return addressService.getAllAddresses();
     }
 
-    /** Returns the own patient id for a patient, or null for staff. */
+    /**
+     * Returns the logged-in patient's ID, or {@code null} for staff.
+     *
+     * @return the patient's ID, or {@code null} for staff
+     */
     private Integer onlyOwnPatientId() {
         JwtUser user = CurrentUser.require();
         if (user.role() == Role.PATIENT) {
@@ -189,7 +194,11 @@ public class PatientAddressController {
         return null;
     }
 
-    /** A patient may only use the own patient id. Staff may use any. */
+    /**
+     * Checks that a patient uses their own ID. Staff may use any patient ID.
+     *
+     * @param patientId the ID to check
+     */
     private void checkOwnPatient(int patientId) {
         Integer ownId = onlyOwnPatientId();
         if (ownId != null && ownId != patientId) {

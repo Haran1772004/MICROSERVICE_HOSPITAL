@@ -5,6 +5,7 @@ package com.hospital.common.exception;
  */
 public class ConflictException extends ApiException {
 
+    private static final int HTTP_STATUS_CONFLICT = 409;
     private static final long serialVersionUID = 1L;
 
     /**
@@ -13,6 +14,6 @@ public class ConflictException extends ApiException {
      * @param message message shown to the caller
      */
     public ConflictException(String message) {
-        super(409, message);
+        super(HTTP_STATUS_CONFLICT, message);
     }
 }

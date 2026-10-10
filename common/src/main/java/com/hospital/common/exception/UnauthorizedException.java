@@ -5,6 +5,7 @@ package com.hospital.common.exception;
  */
 public class UnauthorizedException extends ApiException {
 
+    private static final int HTTP_STATUS_UNAUTHORIZED = 401;
     private static final long serialVersionUID = 1L;
 
     /**
@@ -13,6 +14,6 @@ public class UnauthorizedException extends ApiException {
      * @param message message shown to the caller
      */
     public UnauthorizedException(String message) {
-        super(401, message);
+        super(HTTP_STATUS_UNAUTHORIZED, message);
     }
 }

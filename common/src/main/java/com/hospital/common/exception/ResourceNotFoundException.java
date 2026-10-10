@@ -5,6 +5,7 @@ package com.hospital.common.exception;
  */
 public class ResourceNotFoundException extends ApiException {
 
+    private static final int HTTP_STATUS_NOT_FOUND = 404;
     private static final long serialVersionUID = 1L;
 
     /**
@@ -13,6 +14,6 @@ public class ResourceNotFoundException extends ApiException {
      * @param message message shown to the caller
      */
     public ResourceNotFoundException(String message) {
-        super(404, message);
+        super(HTTP_STATUS_NOT_FOUND, message);
     }
 }

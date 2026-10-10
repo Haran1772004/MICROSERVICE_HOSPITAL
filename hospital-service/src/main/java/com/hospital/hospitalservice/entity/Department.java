@@ -1,6 +1,5 @@
 package com.hospital.hospitalservice.entity;
 
-import com.hospital.common.enums.AccountStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,6 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import com.hospital.common.enums.AccountStatus;
+
 /**
  * A hospital department, for example Cardiology. Doctors belong to a department.
  * This entity is never returned from the API; use {@code DepartmentResponse}.
@@ -18,19 +19,23 @@ import jakarta.persistence.Table;
 @Table(name = "departments")
 public class Department {
 
+    private static final int NAME_COLUMN_LENGTH = 100;
+    private static final int DESCRIPTION_COLUMN_LENGTH = 255;
+    private static final int STATUS_COLUMN_LENGTH = 8;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "department_id")
     private int departmentId;
 
-    @Column(name = "name", nullable = false, unique = true, length = 100)
+    @Column(name = "name", nullable = false, unique = true, length = NAME_COLUMN_LENGTH)
     private String name;
 
-    @Column(name = "description", length = 255)
+    @Column(name = "description", length = DESCRIPTION_COLUMN_LENGTH)
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 8)
+    @Column(name = "status", nullable = false, length = STATUS_COLUMN_LENGTH)
     private AccountStatus status;
 
     /**

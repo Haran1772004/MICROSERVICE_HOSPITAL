@@ -1,10 +1,11 @@
 package com.hospital.appointment.security;
 
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.MediaType;
-
 import java.io.IOException;
 import java.time.Instant;
+
+import jakarta.servlet.http.HttpServletResponse;
+
+import org.springframework.http.MediaType;
 
 /**
  * Writes a JSON error body from inside security filters.

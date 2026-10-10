@@ -1,8 +1,8 @@
 package com.hospital.auth.security;
 
-import com.hospital.common.security.InternalApi;
-import com.hospital.common.security.JwtUser;
-import com.hospital.common.security.JwtUtil;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,17 +11,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
+import com.hospital.common.security.InternalApi;
+import com.hospital.common.security.JwtUser;
+import com.hospital.common.security.JwtUtil;
 
 /**
- * Reads the {@code Authorization: Bearer <token>} header, checks the token with
- * {@link JwtUtil} and puts the logged-in user into the security context.
- * A request without a token passes through (Spring Security then answers 401 where login
- * is needed). A request with a wrong or expired token gets 401 here.
- * It ignores {@code /internal/**}: a user token must never open those endpoints.
+ * Reads the {@code Authorization: Bearer <token>} header, checks the token with {@link JwtUtil} and
+ * puts the logged-in user into the security context. A request without a token passes through
+ * (Spring Security then answers 401 where login is needed). A request with a wrong or expired token
+ * gets 401 here. It ignores {@code /internal/**}: a user token must never open those endpoints.
  */
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -30,10 +28,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
 
     /**
-     * Creates the filter.
-     *
-     * @param jwtUtil helper used to read tokens
-     */
+      * Creates the filter.
+      *
+      * @param jwtUtil helper used to read tokens
+      */
     public JwtAuthenticationFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
@@ -46,8 +44,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain filterChain)
+    protected void doFilterInternal(
+            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         String header = request.getHeader("Authorization");
@@ -58,14 +56,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         Optional<JwtUser> user = jwtUtil.parse(header.substring(BEARER_PREFIX.length()));
         if (user.isEmpty()) {
-            SecurityErrorWriter.write(response, HttpServletResponse.SC_UNAUTHORIZED,
-                    "Invalid or expired JWT");
+            SecurityErrorWriter.write(
+                    response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired JWT");
             return;
         }
 
         JwtUser jwtUser = user.get();
         UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(jwtUser, null,
+                new UsernamePasswordAuthenticationToken(
+                        jwtUser,
+                        null,
                         List.of(new SimpleGrantedAuthority("ROLE_" + jwtUser.role().name())));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 

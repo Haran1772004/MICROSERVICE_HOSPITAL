@@ -1,7 +1,5 @@
 package com.hospital.hospitalservice;
 
-import com.sun.net.httpserver.HttpServer;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -9,19 +7,30 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.sun.net.httpserver.HttpServer;
+
 /**
  * A tiny fake of auth-service for tests. It records every request and answers with a
  * status and body that the test can set.
  */
 final class FakeAuthService {
 
-    /** One request received by the fake. */
+    private static final int OK_STATUS_CODE = 200;
+
+    /**
+     * One request received by the fake.
+     *
+     * @param method the HTTP method
+     * @param path the request path
+     * @param secret the internal secret header
+     * @param body the request body
+     */
     record Call(String method, String path, String secret, String body) {
     }
 
     private final HttpServer server;
     private final List<Call> calls = new CopyOnWriteArrayList<>();
-    private volatile int responseStatus = 200;
+    private volatile int responseStatus = OK_STATUS_CODE;
     private volatile String responseBody = "";
 
     FakeAuthService() throws IOException {
@@ -54,7 +63,7 @@ final class FakeAuthService {
 
     void reset() {
         calls.clear();
-        responseStatus = 200;
+        responseStatus = OK_STATUS_CODE;
         responseBody = "";
     }
 

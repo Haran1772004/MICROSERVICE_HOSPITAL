@@ -1,10 +1,8 @@
 package com.hospital.auth;
 
-import com.hospital.auth.entity.User;
-import com.hospital.auth.repository.UserRepository;
-import com.hospital.common.enums.AccountStatus;
-import com.hospital.common.enums.Role;
-import com.hospital.common.security.JwtUtil;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.UUID;
 import jakarta.servlet.Filter;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assumptions;
@@ -21,11 +19,11 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.util.UUID;
-
+import com.hospital.auth.entity.User;
+import com.hospital.auth.repository.UserRepository;
+import com.hospital.common.enums.AccountStatus;
+import com.hospital.common.enums.Role;
+import com.hospital.common.security.JwtUtil;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -34,24 +32,28 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests the auth-service against a real PostgreSQL database and a fake hospital-service.
  *
- * <p>The database is read from DB_URL, DB_USERNAME and DB_PASSWORD (default
- * {@code jdbc:postgresql://localhost:5432/auth_db}, user {@code postgres}). If the database
- * cannot be reached, the tests are skipped. The tests use random usernames that start with
- * {@code tst_} and delete them at the end.
+ * <p>The database is read from DB_URL, DB_USERNAME and DB_PASSWORD (default {@code
+ * jdbc:postgresql://localhost:5432/auth_db}, user {@code postgres}). If the database cannot be
+ * reached, the tests are skipped. The tests use random usernames that start with {@code tst_} and
+ * delete them at the end.
  */
-@SpringBootTest(properties = {
-        "jwt.secret=test-jwt-secret-that-is-longer-than-32-characters",
-        "internal.api-secret=test-internal-secret",
-        "spring.datasource.password=${DB_PASSWORD:postgres}"
-})
+@SpringBootTest(
+        properties = {
+            "jwt.secret=test-jwt-secret-that-is-longer-than-32-characters",
+            "internal.api-secret=test-internal-secret",
+            "spring.datasource.password=${DB_PASSWORD:postgres}"
+        })
 class AuthServiceIntegrationTest {
+
+    private static final int RANDOM_NAME_SUFFIX_LENGTH = 8;
+    private static final int CONFLICT_STATUS_CODE = 409;
+    private static final int INTERNAL_SERVER_ERROR_STATUS_CODE = 500;
 
     private static final String DB_URL =
             System.getenv().getOrDefault("DB_URL", "jdbc:postgresql://localhost:5432/auth_db");
@@ -63,16 +65,11 @@ class AuthServiceIntegrationTest {
 
     private static FakeHospitalService hospital;
 
-    @Autowired
-    private WebApplicationContext context;
-    @Autowired
-    private Filter springSecurityFilterChain;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private JwtUtil jwtUtil;
+    @Autowired private WebApplicationContext context;
+    @Autowired private Filter springSecurityFilterChain;
+    @Autowired private UserRepository userRepository;
+    @Autowired private PasswordEncoder passwordEncoder;
+    @Autowired private JwtUtil jwtUtil;
 
     private MockMvc mockMvc;
 
@@ -100,7 +97,7 @@ class AuthServiceIntegrationTest {
         }
         hospital.stop();
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-             java.sql.Statement statement = connection.createStatement()) {
+                java.sql.Statement statement = connection.createStatement()) {
             statement.executeUpdate("DELETE FROM users WHERE username LIKE 'tst\\_%'");
         }
     }
@@ -108,15 +105,17 @@ class AuthServiceIntegrationTest {
     @BeforeEach
     void setUp() {
         hospital.reset();
-        mockMvc = MockMvcBuilders.webAppContextSetup(context)
-                .addFilters(springSecurityFilterChain)
-                .build();
+        mockMvc =
+                MockMvcBuilders.webAppContextSetup(context)
+                        .addFilters(springSecurityFilterChain)
+                        .build();
     }
 
     // ---------- helpers ----------
 
     private String newName() {
-        return "tst_" + UUID.randomUUID().toString().replace("-", "").substring(0, 8);
+        return "tst_" + UUID.randomUUID().toString().replace("-", "")
+                .substring(0, RANDOM_NAME_SUFFIX_LENGTH);
     }
 
     private User saveUser(Role role, AccountStatus status) {
@@ -133,7 +132,11 @@ class AuthServiceIntegrationTest {
     }
 
     private String patientBody(String username) {
-        return "{\"username\":\"" + username + "\",\"password\":\"" + PASSWORD + "\","
+        return "{\"username\":\""
+                + username
+                + "\",\"password\":\""
+                + PASSWORD
+                + "\","
                 + "\"name\":\"Test Patient\",\"dob\":\"1995-05-15\",\"gender\":\"MALE\","
                 + "\"phone\":\"9876543210\",\"email\":\"p@example.com\","
                 + "\"state\":\"Tamil Nadu\",\"district\":\"Tenkasi\",\"pincode\":\"627751\","
@@ -141,7 +144,11 @@ class AuthServiceIntegrationTest {
     }
 
     private String doctorBody(String username) {
-        return "{\"username\":\"" + username + "\",\"password\":\"" + PASSWORD + "\","
+        return "{\"username\":\""
+                + username
+                + "\",\"password\":\""
+                + PASSWORD
+                + "\","
                 + "\"name\":\"Dr Test\",\"specialization\":\"Cardiology\","
                 + "\"phone\":\"9876500001\",\"email\":\"d@example.com\",\"departmentId\":1}";
     }
@@ -153,12 +160,17 @@ class AuthServiceIntegrationTest {
     void loginSuccess() throws Exception {
         User user = saveUser(Role.PATIENT, AccountStatus.ACTIVE);
 
-        String json = mockMvc.perform(post("/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(loginBody(user.getUsername(), PASSWORD)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Login successful"))
-                .andReturn().getResponse().getContentAsString();
+        String json =
+                mockMvc
+                        .perform(
+                                post("/auth/login")
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(loginBody(user.getUsername(), PASSWORD)))
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.message").value("Login successful"))
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString();
 
         String token = json.replaceAll(".*\"token\":\"([^\"]+)\".*", "$1");
         assertTrue(jwtUtil.parse(token).isPresent());
@@ -171,9 +183,11 @@ class AuthServiceIntegrationTest {
     void loginWrongPassword() throws Exception {
         User user = saveUser(Role.PATIENT, AccountStatus.ACTIVE);
 
-        mockMvc.perform(post("/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(loginBody(user.getUsername(), "WrongPass1")))
+        mockMvc
+                .perform(
+                        post("/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(loginBody(user.getUsername(), "WrongPass1")))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("Invalid username or password."));
     }
@@ -181,12 +195,17 @@ class AuthServiceIntegrationTest {
     @Test
     @DisplayName("Login: PENDING, REJECTED and INACTIVE accounts get 401")
     void loginBlockedStatuses() throws Exception {
-        for (AccountStatus blocked : new AccountStatus[] {
-                AccountStatus.PENDING, AccountStatus.REJECTED, AccountStatus.INACTIVE}) {
+        for (AccountStatus blocked
+                :
+                new AccountStatus[] {
+                    AccountStatus.PENDING, AccountStatus.REJECTED, AccountStatus.INACTIVE
+                }) {
             User user = saveUser(Role.DOCTOR, blocked);
-            mockMvc.perform(post("/auth/login")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(loginBody(user.getUsername(), PASSWORD)))
+            mockMvc
+                    .perform(
+                            post("/auth/login")
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .content(loginBody(user.getUsername(), PASSWORD)))
                     .andExpect(status().isUnauthorized());
         }
     }
@@ -198,9 +217,11 @@ class AuthServiceIntegrationTest {
     void registerPatient() throws Exception {
         String username = newName();
 
-        mockMvc.perform(post("/auth/register/patient")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(patientBody(username)))
+        mockMvc
+                .perform(
+                        post("/auth/register/patient")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(patientBody(username)))
                 .andExpect(status().isCreated());
 
         User user = userRepository.findByUsername(username).orElseThrow();
@@ -221,16 +242,21 @@ class AuthServiceIntegrationTest {
     @Test
     @DisplayName("Register patient: hospital-service 409 is passed on and the user is removed")
     void registerPatientConflictFromHospital() throws Exception {
-        hospital.answerWith(409, "{\"status\":409,\"message\":"
-                + "\"A patient with this phone number already exists.\"}");
+        hospital.answerWith(
+                CONFLICT_STATUS_CODE,
+                "{\"status\":409,\"message\":"
+                        + "\"A patient with this phone number already exists.\"}");
         String username = newName();
 
-        mockMvc.perform(post("/auth/register/patient")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(patientBody(username)))
+        mockMvc
+                .perform(
+                        post("/auth/register/patient")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(patientBody(username)))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.message")
-                        .value("A patient with this phone number already exists."));
+                .andExpect(
+                        jsonPath("$.message")
+                                .value("A patient with this phone number already exists."));
 
         assertTrue(userRepository.findByUsername(username).isEmpty());
         assertEquals(1, hospital.calls().size());
@@ -239,18 +265,24 @@ class AuthServiceIntegrationTest {
     @Test
     @DisplayName("Register patient: hospital-service 500 gives 503, user removed, profile undone")
     void registerPatientHospitalFails() throws Exception {
-        hospital.answerWith(500, "");
+        hospital.answerWith(INTERNAL_SERVER_ERROR_STATUS_CODE, "");
         String username = newName();
 
-        mockMvc.perform(post("/auth/register/patient")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(patientBody(username)))
+        mockMvc
+                .perform(
+                        post("/auth/register/patient")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(patientBody(username)))
                 .andExpect(status().isServiceUnavailable());
 
         assertTrue(userRepository.findByUsername(username).isEmpty());
-        boolean undoCalled = hospital.calls().stream()
-                .anyMatch(call -> call.method().equals("DELETE")
-                        && call.path().startsWith("/internal/profiles/by-user/"));
+        boolean undoCalled =
+                hospital.calls().stream()
+                        .anyMatch(
+                                call ->
+                                        call.method().equals("DELETE")
+                                                && call.path()
+                                                        .startsWith("/internal/profiles/by-user/"));
         assertTrue(undoCalled);
     }
 
@@ -259,9 +291,11 @@ class AuthServiceIntegrationTest {
     void registerDoctor() throws Exception {
         String username = newName();
 
-        mockMvc.perform(post("/auth/register/doctor")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(doctorBody(username)))
+        mockMvc
+                .perform(
+                        post("/auth/register/doctor")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(doctorBody(username)))
                 .andExpect(status().isCreated());
 
         User user = userRepository.findByUsername(username).orElseThrow();
@@ -273,9 +307,11 @@ class AuthServiceIntegrationTest {
     @Test
     @DisplayName("Register: blank username gives 400 and no call to hospital-service")
     void registerValidation() throws Exception {
-        mockMvc.perform(post("/auth/register/patient")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(patientBody("")))
+        mockMvc
+                .perform(
+                        post("/auth/register/patient")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(patientBody("")))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Username is required."));
 
@@ -287,9 +323,11 @@ class AuthServiceIntegrationTest {
     void registerDuplicateUsername() throws Exception {
         User existing = saveUser(Role.PATIENT, AccountStatus.ACTIVE);
 
-        mockMvc.perform(post("/auth/register/patient")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(patientBody(existing.getUsername())))
+        mockMvc
+                .perform(
+                        post("/auth/register/patient")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(patientBody(existing.getUsername())))
                 .andExpect(status().isConflict());
 
         assertTrue(hospital.calls().isEmpty());
@@ -302,18 +340,23 @@ class AuthServiceIntegrationTest {
     void internalNeedsSecret() throws Exception {
         User user = saveUser(Role.DOCTOR, AccountStatus.PENDING);
 
-        mockMvc.perform(patch("/internal/users/" + user.getUserId() + "/status")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"status\":\"ACTIVE\"}"))
+        mockMvc
+                .perform(
+                        patch("/internal/users/" + user.getUserId() + "/status")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"status\":\"ACTIVE\"}"))
                 .andExpect(status().isUnauthorized());
 
-        mockMvc.perform(patch("/internal/users/" + user.getUserId() + "/status")
-                        .header("Authorization", bearer(Role.ADMIN))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"status\":\"ACTIVE\"}"))
+        mockMvc
+                .perform(
+                        patch("/internal/users/" + user.getUserId() + "/status")
+                                .header("Authorization", bearer(Role.ADMIN))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"status\":\"ACTIVE\"}"))
                 .andExpect(status().isUnauthorized());
 
-        assertEquals(AccountStatus.PENDING,
+        assertEquals(
+                AccountStatus.PENDING,
                 userRepository.findById(user.getUserId()).orElseThrow().getStatus());
     }
 
@@ -322,21 +365,28 @@ class AuthServiceIntegrationTest {
     void internalWithSecret() throws Exception {
         User user = saveUser(Role.DOCTOR, AccountStatus.PENDING);
 
-        mockMvc.perform(patch("/internal/users/" + user.getUserId() + "/status")
-                        .header("X-Internal-Secret", SECRET)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"status\":\"ACTIVE\"}"))
+        mockMvc
+                .perform(
+                        patch("/internal/users/" + user.getUserId() + "/status")
+                                .header("X-Internal-Secret", SECRET)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{\"status\":\"ACTIVE\"}"))
                 .andExpect(status().isOk());
-        assertEquals(AccountStatus.ACTIVE,
+        assertEquals(
+                AccountStatus.ACTIVE,
                 userRepository.findById(user.getUserId()).orElseThrow().getStatus());
 
-        mockMvc.perform(delete("/internal/users/" + user.getUserId())
-                        .header("X-Internal-Secret", SECRET))
+        mockMvc
+                .perform(
+                        delete("/internal/users/" + user.getUserId())
+                                .header("X-Internal-Secret", SECRET))
                 .andExpect(status().isOk());
         assertTrue(userRepository.findById(user.getUserId()).isEmpty());
 
-        mockMvc.perform(delete("/internal/users/" + user.getUserId())
-                        .header("X-Internal-Secret", SECRET))
+        mockMvc
+                .perform(
+                        delete("/internal/users/" + user.getUserId())
+                                .header("X-Internal-Secret", SECRET))
                 .andExpect(status().isNotFound());
     }
 
@@ -347,46 +397,63 @@ class AuthServiceIntegrationTest {
     void adminDeactivate() throws Exception {
         User user = saveUser(Role.PATIENT, AccountStatus.ACTIVE);
 
-        mockMvc.perform(patch("/admin/users/" + user.getUserId() + "/deactivate")
-                        .header("Authorization", bearer(Role.PATIENT)))
+        mockMvc
+                .perform(
+                        patch("/admin/users/" + user.getUserId() + "/deactivate")
+                                .header("Authorization", bearer(Role.PATIENT)))
                 .andExpect(status().isForbidden());
 
-        mockMvc.perform(patch("/admin/users/" + user.getUserId() + "/deactivate")
-                        .header("Authorization", bearer(Role.ADMIN)))
+        mockMvc
+                .perform(
+                        patch("/admin/users/" + user.getUserId() + "/deactivate")
+                                .header("Authorization", bearer(Role.ADMIN)))
                 .andExpect(status().isOk());
-        assertEquals(AccountStatus.INACTIVE,
+        assertEquals(
+                AccountStatus.INACTIVE,
                 userRepository.findById(user.getUserId()).orElseThrow().getStatus());
 
-        mockMvc.perform(post("/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(loginBody(user.getUsername(), PASSWORD)))
+        mockMvc
+                .perform(
+                        post("/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(loginBody(user.getUsername(), PASSWORD)))
                 .andExpect(status().isUnauthorized());
     }
 
-        @Test
+    @Test
     @DisplayName("Users: admin creates a receptionist and changes status")
     void adminManagesUsers() throws Exception {
         String username = newName();
         String admin = bearer(Role.ADMIN);
 
-        mockMvc.perform(post("/users")
-                        .header("Authorization", admin)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"username\":\"" + username
-                                + "\",\"password\":\"secret1\",\"role\":\"receptionist\"}"))
+        mockMvc
+                .perform(
+                        post("/users")
+                                .header("Authorization", admin)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(
+                                        "{\"username\":\""
+                                                + username
+                                                + "\",\"password\":\"secret1\","
+                                                + "\"role\":\"receptionist\"}"))
                 .andExpect(status().isOk());
-        assertEquals(Role.RECEPTIONIST,
-                userRepository.findByUsername(username).orElseThrow().getRole());
+        assertEquals(
+                Role.RECEPTIONIST, userRepository.findByUsername(username).orElseThrow().getRole());
 
-        mockMvc.perform(put("/users/" + username + "/status?status=INACTIVE")
-                        .header("Authorization", admin))
+        mockMvc
+                .perform(
+                        put("/users/" + username + "/status?status=INACTIVE")
+                                .header("Authorization", admin))
                 .andExpect(status().isOk());
-        mockMvc.perform(get("/users/" + username).header("Authorization", admin))
+        mockMvc
+                .perform(get("/users/" + username).header("Authorization", admin))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("INACTIVE"));
 
-        mockMvc.perform(put("/users/" + username + "/status?status=NOPE")
-                        .header("Authorization", admin))
+        mockMvc
+                .perform(
+                        put("/users/" + username + "/status?status=NOPE")
+                                .header("Authorization", admin))
                 .andExpect(status().isBadRequest());
     }
 
@@ -394,14 +461,18 @@ class AuthServiceIntegrationTest {
     @DisplayName("Users: admin cannot create a PATIENT or DOCTOR login")
     void adminCannotCreatePatientOrDoctor() throws Exception {
         for (String role : new String[] {"patient", "doctor"}) {
-            mockMvc.perform(post("/users")
-                            .header("Authorization", bearer(Role.ADMIN))
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content("{\"username\":\"" + newName()
-                                    + "\",\"password\":\"secret1\",\"role\":\""
-                                    + role + "\"}"))
+            mockMvc
+                    .perform(
+                            post("/users")
+                                    .header("Authorization", bearer(Role.ADMIN))
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .content(
+                                            "{\"username\":\""
+                                                    + newName()
+                                                    + "\",\"password\":\"secret1\",\"role\":\""
+                                                    + role
+                                                    + "\"}"))
                     .andExpect(status().isBadRequest());
         }
     }
 }
-

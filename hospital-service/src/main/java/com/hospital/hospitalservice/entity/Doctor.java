@@ -1,17 +1,18 @@
 package com.hospital.hospitalservice.entity;
 
-import com.hospital.common.enums.AccountStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+import com.hospital.common.enums.AccountStatus;
 
 /**
  * A doctor profile. {@code userId} is the id of the login account in auth-service. It is a
@@ -22,6 +23,12 @@ import jakarta.persistence.ManyToOne;
 @Table(name = "doctors")
 public class Doctor {
 
+    private static final int NAME_COLUMN_LENGTH = 100;
+    private static final int SPECIALIZATION_COLUMN_LENGTH = 100;
+    private static final int PHONE_COLUMN_LENGTH = 20;
+    private static final int EMAIL_COLUMN_LENGTH = 100;
+    private static final int STATUS_COLUMN_LENGTH = 8;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "doctor_id")
@@ -30,16 +37,16 @@ public class Doctor {
     @Column(name = "user_id", unique = true)
     private Integer userId;
 
-    @Column(name = "name", nullable = false, length = 100)
+    @Column(name = "name", nullable = false, length = NAME_COLUMN_LENGTH)
     private String name;
 
-    @Column(name = "specialization", nullable = false, length = 100)
+    @Column(name = "specialization", nullable = false, length = SPECIALIZATION_COLUMN_LENGTH)
     private String specialization;
 
-    @Column(name = "phone", nullable = false, unique = true, length = 20)
+    @Column(name = "phone", nullable = false, unique = true, length = PHONE_COLUMN_LENGTH)
     private String phone;
 
-    @Column(name = "email", nullable = false, unique = true, length = 100)
+    @Column(name = "email", nullable = false, unique = true, length = EMAIL_COLUMN_LENGTH)
     private String email;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
@@ -47,7 +54,7 @@ public class Doctor {
     private Department department;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 8)
+    @Column(name = "status", nullable = false, length = STATUS_COLUMN_LENGTH)
     private AccountStatus status;
 
     /**

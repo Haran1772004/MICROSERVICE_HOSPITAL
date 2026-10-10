@@ -1,19 +1,14 @@
 package com.hospital.hospitalservice;
 
-import com.hospital.common.enums.AccountStatus;
-import com.hospital.common.enums.AddressType;
-import com.hospital.common.enums.Gender;
-import com.hospital.common.enums.Role;
-import com.hospital.common.security.JwtUtil;
-import com.hospital.hospitalservice.entity.Department;
-import com.hospital.hospitalservice.entity.Doctor;
-import com.hospital.hospitalservice.entity.Patient;
-import com.hospital.hospitalservice.entity.PatientAddress;
-import com.hospital.hospitalservice.repository.DepartmentRepository;
-import com.hospital.hospitalservice.repository.DoctorRepository;
-import com.hospital.hospitalservice.repository.PatientAddressRepository;
-import com.hospital.hospitalservice.repository.PatientRepository;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.time.LocalDate;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
+
 import jakarta.servlet.Filter;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
@@ -29,12 +24,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
-import java.time.LocalDate;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
+import com.hospital.common.enums.AccountStatus;
+import com.hospital.common.enums.AddressType;
+import com.hospital.common.enums.Gender;
+import com.hospital.common.enums.Role;
+import com.hospital.common.security.JwtUtil;
+import com.hospital.hospitalservice.entity.Department;
+import com.hospital.hospitalservice.entity.Doctor;
+import com.hospital.hospitalservice.entity.Patient;
+import com.hospital.hospitalservice.entity.PatientAddress;
+import com.hospital.hospitalservice.repository.DepartmentRepository;
+import com.hospital.hospitalservice.repository.DoctorRepository;
+import com.hospital.hospitalservice.repository.PatientAddressRepository;
+import com.hospital.hospitalservice.repository.PatientRepository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -61,6 +63,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "spring.cache.type=simple"
 })
 class HospitalServiceIntegrationTest {
+
+    private static final int RANDOM_NAME_SUFFIX_LENGTH = 8;
+    private static final int RANDOM_USER_ID_LOWER_BOUND = 1_000_000;
+    private static final int RANDOM_USER_ID_UPPER_BOUND = 2_000_000_000;
+    private static final long RANDOM_PHONE_BOUND = 1_000_000_000L;
+    private static final int TEST_BIRTH_YEAR = 1995;
+    private static final int TEST_BIRTH_MONTH = 5;
+    private static final int TEST_BIRTH_DAY = 15;
+    private static final int SERVER_ERROR_STATUS_CODE = 500;
+    private static final int NOT_FOUND_STATUS_CODE = 404;
 
     private static final String DB_URL = System.getenv()
             .getOrDefault("DB_URL", "jdbc:postgresql://localhost:5433/hospital_db");
@@ -132,7 +144,8 @@ class HospitalServiceIntegrationTest {
     // ---------- helpers ----------
 
     private String newText() {
-        return "tst_" + UUID.randomUUID().toString().replace("-", "").substring(0, 8);
+        return "tst_" + UUID.randomUUID().toString().replace("-", "")
+                .substring(0, RANDOM_NAME_SUFFIX_LENGTH);
     }
 
     private String newEmail() {
@@ -140,11 +153,13 @@ class HospitalServiceIntegrationTest {
     }
 
     private String newPhone() {
-        return "9" + String.format("%09d", ThreadLocalRandom.current().nextLong(1_000_000_000L));
+        return "9" + String.format(
+                "%09d", ThreadLocalRandom.current().nextLong(RANDOM_PHONE_BOUND));
     }
 
     private int newUserId() {
-        return ThreadLocalRandom.current().nextInt(1_000_000, 2_000_000_000);
+        return ThreadLocalRandom.current().nextInt(
+                RANDOM_USER_ID_LOWER_BOUND, RANDOM_USER_ID_UPPER_BOUND);
     }
 
     private String bearer(Role role) {
@@ -160,13 +175,16 @@ class HospitalServiceIntegrationTest {
     }
 
     private Doctor saveDoctor(Integer userId, Department department, AccountStatus status) {
-        return doctorRepository.save(new Doctor(userId, "Dr Test", "Cardiology", newPhone(),
-                newEmail(), department, status));
+        return doctorRepository.save(
+                new Doctor(userId, "Dr Test", "Cardiology", newPhone(), newEmail(),
+                        department, status));
     }
 
     private Patient savePatient(Integer userId, AccountStatus status) {
-        return patientRepository.save(new Patient(userId, "Test Patient",
-                LocalDate.of(1995, 5, 15), Gender.MALE, newPhone(), newEmail(), status));
+        return patientRepository.save(
+                new Patient(userId, "Test Patient",
+                        LocalDate.of(TEST_BIRTH_YEAR, TEST_BIRTH_MONTH, TEST_BIRTH_DAY),
+                        Gender.MALE, newPhone(), newEmail(), status));
     }
 
     private String patientBody(String phone, String email) {
@@ -491,14 +509,14 @@ class HospitalServiceIntegrationTest {
         Doctor doctorTwo = saveDoctor(newUserId(), department, AccountStatus.PENDING);
         String admin = bearer(Role.ADMIN);
 
-        auth.answerWith(500, "");
+        auth.answerWith(SERVER_ERROR_STATUS_CODE, "");
         mockMvc.perform(post("/admin/doctors/" + doctorOne.getDoctorId() + "/approve")
                         .header("Authorization", admin))
                 .andExpect(status().isServiceUnavailable());
         assertEquals(AccountStatus.PENDING,
                 doctorRepository.findById(doctorOne.getDoctorId()).orElseThrow().getStatus());
 
-        auth.answerWith(404, "{\"status\":404,\"message\":\"User not found.\"}");
+        auth.answerWith(NOT_FOUND_STATUS_CODE, "{\"status\":404,\"message\":\"User not found.\"}");
         mockMvc.perform(post("/admin/doctors/" + doctorTwo.getDoctorId() + "/approve")
                         .header("Authorization", admin))
                 .andExpect(status().isNotFound())

@@ -1,7 +1,8 @@
 package com.hospital.hospitalservice.repository;
 
-import com.hospital.hospitalservice.entity.Department;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.hospital.hospitalservice.entity.Department;
 
 /**
  * Database access for departments.
