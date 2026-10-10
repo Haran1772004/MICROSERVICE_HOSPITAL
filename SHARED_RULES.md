@@ -61,7 +61,7 @@ Defaults are already in each `application.yml`. Keep `ddl-auto: none`. Each serv
   - Approve: set doctor ACTIVE here, then call auth-service to set the user ACTIVE. Reject: same with REJECTED.
 - Patients: `GET /patients`, `GET /patients/{id}`, `PUT /patients/{id}`, `PATCH /patients/{id}/activate|deactivate`, `GET /patients/status/{status}`, `GET/PUT /patients/me`
 - Addresses: `GET/POST /patient-addresses/me`, `GET /patient-addresses/me/default`, `PUT /patient-addresses/{id}`, `GET /patient-addresses/patient/{patientId}`
-- Cache (Redis): departments, doctors list, doctor by id. Clear the cache on update, activate, deactivate.
+- Cache (Caffeine, local): departments, doctors list, doctor by id. Clear the cache on update, activate, deactivate.
 
 **appointment-service**
 - `POST /appointments` — RECEPTIONIST sends `patientId`. PATIENT does not send it; the service finds it from the JWT `userId` (call hospital-service).

@@ -6,8 +6,7 @@ import com.hospital.hospitalservice.entity.Doctor;
 import java.io.Serializable;
 
 /**
- * A doctor as sent to the caller. It is {@link Serializable} because it can be stored in
- * the Redis cache.
+ * A doctor as sent to the caller and stored in the local cache.
  *
  * @param doctorId       id of the doctor
  * @param userId         id of the login account in auth-service (may be null)

@@ -6,8 +6,7 @@ import com.hospital.hospitalservice.entity.Department;
 import java.io.Serializable;
 
 /**
- * A department as sent to the caller. It is {@link Serializable} because it can be stored
- * in the Redis cache.
+ * A department as sent to the caller and stored in the local cache.
  *
  * @param departmentId id of the department
  * @param name         department name

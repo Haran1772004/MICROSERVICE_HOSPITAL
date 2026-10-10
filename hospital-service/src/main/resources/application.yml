@@ -18,14 +18,7 @@ spring:
       # schema.sql only uses CREATE TABLE IF NOT EXISTS, so it is safe to run on every start.
       mode: always
   cache:
-    # simple = in memory (default). Use redis when a Redis server is available.
-    type: ${CACHE_TYPE:simple}
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-      repositories:
-        enabled: false
+    type: ${CACHE_TYPE:caffeine}
 
 jwt:
   secret: ${JWT_SECRET}

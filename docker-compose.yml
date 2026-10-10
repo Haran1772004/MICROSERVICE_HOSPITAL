@@ -61,9 +61,12 @@ services:
         SERVICE_MODULE: auth-service
     image: hospital/auth-service:local
     restart: unless-stopped
+    mem_limit: 400m
+    cpus: 0.75
     ports:
       - "8081:8081"
     environment:
+      JAVA_TOOL_OPTIONS: "-Xmx256m -XX:+UseSerialGC"
       SERVER_PORT: "8081"
       DB_URL: jdbc:postgresql://auth-db:5432/auth_db
       DB_USERNAME: postgres
@@ -83,9 +86,12 @@ services:
         SERVICE_MODULE: hospital-service
     image: hospital/hospital-service:local
     restart: unless-stopped
+    mem_limit: 400m
+    cpus: 0.75
     ports:
       - "8082:8082"
     environment:
+      JAVA_TOOL_OPTIONS: "-Xmx256m -XX:+UseSerialGC"
       SERVER_PORT: "8082"
       DB_URL: jdbc:postgresql://hospital-db:5432/hospital_db
       DB_USERNAME: postgres
@@ -105,9 +111,12 @@ services:
         SERVICE_MODULE: appointment-service
     image: hospital/appointment-service:local
     restart: unless-stopped
+    mem_limit: 400m
+    cpus: 0.75
     ports:
       - "8083:8083"
     environment:
+      JAVA_TOOL_OPTIONS: "-Xmx256m -XX:+UseSerialGC"
       SERVER_PORT: "8083"
       DB_URL: jdbc:postgresql://appointment-db:5432/appointment_db
       DB_USERNAME: postgres
