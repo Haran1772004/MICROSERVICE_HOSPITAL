@@ -6,3 +6,4 @@ target/
 .vscode/
 *.iml
 *.zip
+.java-format-deps/
