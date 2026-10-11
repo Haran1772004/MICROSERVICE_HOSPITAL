@@ -1,8 +1,6 @@
 package com.hospital.common.security;
 
-/**
- * Constants for calls between services.
- */
+
 public final class InternalApi {
 
     /** Header that carries the shared internal secret. */

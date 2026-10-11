@@ -10,11 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Optional;
 
-/**
- * Creates and reads JWT tokens. Every service uses the same secret, so a token
- * made by auth-service can be checked by the other services.
- * This is a plain class. Each service creates one in its own configuration class.
- */
+
 public class JwtUtil {
 
     private static final String CLAIM_USER_ID = "userId";
