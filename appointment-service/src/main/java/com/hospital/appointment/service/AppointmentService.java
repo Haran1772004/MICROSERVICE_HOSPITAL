@@ -13,6 +13,7 @@ import com.hospital.appointment.dto.AppointmentResponse;
 import com.hospital.appointment.dto.DoctorInfo;
 import com.hospital.appointment.dto.PatientInfo;
 import com.hospital.appointment.entity.Appointment;
+import com.hospital.appointment.event.AppointmentEventPublisher; // NEW
 import com.hospital.appointment.repository.AppointmentRepository;
 import com.hospital.common.enums.AccountStatus;
 import com.hospital.common.enums.AppointmentStatus;
@@ -38,17 +39,21 @@ public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
     private final HospitalServiceClient hospitalServiceClient;
+    private final AppointmentEventPublisher eventPublisher; // NEW
 
     /**
      * Creates the service.
      *
      * @param appointmentRepository repository for appointments
      * @param hospitalServiceClient remote access to hospital-service
+     * @param eventPublisher sends appointment events to Kafka
      */
     public AppointmentService(AppointmentRepository appointmentRepository,
-                              HospitalServiceClient hospitalServiceClient) {
+                              HospitalServiceClient hospitalServiceClient,
+                              AppointmentEventPublisher eventPublisher) { // NEW
         this.appointmentRepository = appointmentRepository;
         this.hospitalServiceClient = hospitalServiceClient;
+        this.eventPublisher = eventPublisher; // NEW
     }
 
     /**
@@ -77,7 +82,9 @@ public class AppointmentService {
 
         Appointment appointment = new Appointment(patientId, request.doctorId(),
                 request.appointmentDate(), request.appointmentTime(), AppointmentStatus.SCHEDULED);
-        return AppointmentResponse.from(appointmentRepository.save(appointment));
+        AppointmentResponse saved = AppointmentResponse.from(appointmentRepository.save(appointment)); // NEW
+        eventPublisher.publish(saved, "BOOKED"); // NEW
+        return saved; // NEW
     }
 
     /**
@@ -182,7 +189,9 @@ public class AppointmentService {
             throw new ConflictException("Only scheduled appointments can be cancelled.");
         }
         appointment.setStatus(AppointmentStatus.CANCELLED);
-        return AppointmentResponse.from(appointmentRepository.save(appointment));
+        AppointmentResponse saved = AppointmentResponse.from(appointmentRepository.save(appointment)); // NEW
+        eventPublisher.publish(saved, "CANCELLED"); // NEW
+        return saved; // NEW
     }
 
     private int resolvePatientId(AppointmentRequest request, JwtUser currentUser) {

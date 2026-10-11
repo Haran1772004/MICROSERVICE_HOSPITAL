@@ -11,7 +11,8 @@ FROM eclipse-temurin:17-jre-jammy AS runtime
 ARG SERVICE_MODULE
 WORKDIR /app
 RUN groupadd --system spring \
-    && useradd --system --gid spring --home-dir /app spring
+    && useradd --system --gid spring --home-dir /app spring \
+    && mkdir /data && chown spring:spring /data
 COPY --from=build --chown=spring:spring \
     /workspace/${SERVICE_MODULE}/target/${SERVICE_MODULE}-*.jar /app/app.jar
 USER spring
