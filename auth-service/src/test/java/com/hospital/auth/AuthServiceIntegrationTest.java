@@ -111,7 +111,6 @@ class AuthServiceIntegrationTest {
                         .build();
     }
 
-    // ---------- helpers ----------
 
     private String newName() {
         return "tst_" + UUID.randomUUID().toString().replace("-", "")
@@ -153,7 +152,6 @@ class AuthServiceIntegrationTest {
                 + "\"phone\":\"9876500001\",\"email\":\"d@example.com\",\"departmentId\":1}";
     }
 
-    // ---------- login ----------
 
     @Test
     @DisplayName("Login: active user gets a token that JwtUtil can read")
@@ -210,7 +208,6 @@ class AuthServiceIntegrationTest {
         }
     }
 
-    // ---------- registration ----------
 
     @Test
     @DisplayName("Register patient: ACTIVE user, hospital-service called with secret and userId")
@@ -333,7 +330,6 @@ class AuthServiceIntegrationTest {
         assertTrue(hospital.calls().isEmpty());
     }
 
-    // ---------- internal endpoints ----------
 
     @Test
     @DisplayName("Internal: no secret, or only a user JWT, gives 401")
@@ -390,7 +386,6 @@ class AuthServiceIntegrationTest {
                 .andExpect(status().isNotFound());
     }
 
-    // ---------- admin and user management ----------
 
     @Test
     @DisplayName("Admin deactivate: ADMIN only, and the user can no longer log in")

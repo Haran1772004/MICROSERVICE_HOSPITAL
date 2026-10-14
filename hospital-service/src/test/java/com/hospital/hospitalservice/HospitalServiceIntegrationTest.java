@@ -141,7 +141,6 @@ class HospitalServiceIntegrationTest {
                 .build();
     }
 
-    // ---------- helpers ----------
 
     private String newText() {
         return "tst_" + UUID.randomUUID().toString().replace("-", "")
@@ -203,7 +202,6 @@ class HospitalServiceIntegrationTest {
                 + "\"addressType\":\"" + type + "\"}";
     }
 
-    // ---------- internal endpoints ----------
 
     @Test
     @DisplayName("Internal: no secret, or only a user JWT, gives 401")
@@ -271,7 +269,6 @@ class HospitalServiceIntegrationTest {
         assertEquals(AccountStatus.PENDING,
                 doctorRepository.findByUserId(userId).orElseThrow().getStatus());
 
-        // duplicate email: 409
         mockMvc.perform(post("/internal/doctors")
                         .header("X-Internal-Secret", SECRET)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -279,7 +276,6 @@ class HospitalServiceIntegrationTest {
                                 "\"userId\":" + newUserId())))
                 .andExpect(status().isConflict());
 
-        // department that does not exist: 404
         mockMvc.perform(post("/internal/doctors")
                         .header("X-Internal-Secret", SECRET)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -288,7 +284,6 @@ class HospitalServiceIntegrationTest {
                                 + "\",\"email\":\"" + newEmail() + "\",\"departmentId\":999999}"))
                 .andExpect(status().isNotFound());
 
-        // inactive department: 400
         mockMvc.perform(post("/internal/doctors")
                         .header("X-Internal-Secret", SECRET)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -345,7 +340,6 @@ class HospitalServiceIntegrationTest {
                 .andExpect(status().isNotFound());
     }
 
-    // ---------- departments ----------
 
     @Test
     @DisplayName("Departments: admin manages them, others only read, the cache is cleared")
@@ -360,7 +354,6 @@ class HospitalServiceIntegrationTest {
                 .andReturn().getResponse().getContentAsString();
         int id = Integer.parseInt(json.replaceAll(".*\"departmentId\":(\\d+).*", "$1"));
 
-        // same name again: 409
         mockMvc.perform(post("/departments")
                         .header("Authorization", bearer(Role.ADMIN))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -405,7 +398,6 @@ class HospitalServiceIntegrationTest {
                 .andExpect(status().isNotFound());
     }
 
-    // ---------- doctors ----------
 
     @Test
     @DisplayName("Doctors: admin creates, updates, deactivates and activates them")
@@ -453,7 +445,6 @@ class HospitalServiceIntegrationTest {
                                 department.getDepartmentId())))
                 .andExpect(status().isForbidden());
 
-        // bad phone: 400 with the old message
         mockMvc.perform(post("/doctors")
                         .header("Authorization", admin)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -525,7 +516,6 @@ class HospitalServiceIntegrationTest {
                 doctorRepository.findById(doctorTwo.getDoctorId()).orElseThrow().getStatus());
     }
 
-    // ---------- patients ----------
 
     @Test
     @DisplayName("Patients: staff manage them, validation and duplicates work")
@@ -607,7 +597,6 @@ class HospitalServiceIntegrationTest {
                 .andExpect(status().isForbidden());
     }
 
-    // ---------- addresses ----------
 
     @Test
     @DisplayName("Addresses: a patient manages only own addresses, staff manage any")
@@ -628,7 +617,6 @@ class HospitalServiceIntegrationTest {
                 .andReturn().getResponse().getContentAsString();
         int addressId = Integer.parseInt(json.replaceAll(".*\"addressId\":(\\d+).*", "$1"));
 
-        // the same type again gives 409
         mockMvc.perform(post("/patient-addresses/me")
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)

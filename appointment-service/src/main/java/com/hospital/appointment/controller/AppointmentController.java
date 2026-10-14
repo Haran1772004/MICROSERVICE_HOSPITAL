@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-//import org.springframework.http.ResponseEntity;
 
 import com.hospital.appointment.dto.AppointmentRequest;
 import com.hospital.appointment.dto.AppointmentResponse;
