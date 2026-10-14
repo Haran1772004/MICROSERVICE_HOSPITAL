@@ -1,0 +1,32 @@
+server:
+  port: ${SERVER_PORT:8081}
+
+spring:
+  application:
+    name: auth-service
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/auth_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+  sql:
+    init:
+      # schema.sql only uses CREATE TABLE IF NOT EXISTS, so it is safe to run on every start.
+      mode: always
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration-ms: ${JWT_EXPIRATION_MS:3600000}
+
+internal:
+  api-secret: ${INTERNAL_API_SECRET}
+
+services:
+  hospital-url: ${HOSPITAL_SERVICE_URL:http://localhost:8082}
+  timeout-ms: ${SERVICE_TIMEOUT_MS:3000}
+
+cors:
+  allowed-origin-patterns: ${CORS_ALLOWED_ORIGIN_PATTERNS:*}
