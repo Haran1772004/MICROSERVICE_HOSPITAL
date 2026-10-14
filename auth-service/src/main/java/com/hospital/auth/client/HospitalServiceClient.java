@@ -40,7 +40,7 @@ public class HospitalServiceClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(HospitalServiceClient.class);
 
-    /** Statuses from hospital-service that are business errors the user should see. */
+   
     private static final Set<Integer> PASS_THROUGH_STATUSES = Set.of(400, 404, 409, 422);
 
     private static final String UNAVAILABLE_MESSAGE =
