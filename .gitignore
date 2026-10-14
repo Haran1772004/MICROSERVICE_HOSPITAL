@@ -1,9 +1,0 @@
-target/
-.env
-.env.*
-!.env.example
-.idea/
-.vscode/
-*.iml
-*.zip
-.java-format-deps/
